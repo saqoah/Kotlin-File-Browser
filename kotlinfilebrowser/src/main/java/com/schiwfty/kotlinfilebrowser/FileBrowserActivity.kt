@@ -28,6 +28,8 @@ class FileBrowserActivity : AppCompatActivity(), FileBrowserContract.View {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_file_browser)
+        setSupportActionBar(toolbar)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
         presenter = FileBrowserPresenter()
         presenter.setup(this, this)
         checkPermission()
@@ -54,5 +56,9 @@ class FileBrowserActivity : AppCompatActivity(), FileBrowserContract.View {
     override fun updateView(files: List<File>) {
         adapter.files = files
         adapter.notifyDataSetChanged()
+    }
+
+    override fun onBackPressed() {
+
     }
 }
