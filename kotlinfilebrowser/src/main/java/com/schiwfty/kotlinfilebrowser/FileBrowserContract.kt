@@ -13,6 +13,7 @@ interface FileBrowserContract {
         fun setToolbarTitle(title: String)
         fun showNoFilesView()
         fun setUpDirectoryVisible(visible: Boolean)
+        fun notifyFileSelected(file: File)
     }
 
     interface Presenter{

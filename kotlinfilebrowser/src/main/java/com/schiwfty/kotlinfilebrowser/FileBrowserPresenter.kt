@@ -36,6 +36,7 @@ class FileBrowserPresenter: FileBrowserContract.Presenter {
     override fun fileClicked(file: File) {
         currentFile = file
         if(file.isDirectory) reload()
+        else view.notifyFileSelected(file)
     }
 
     override fun goUpADirectory() {

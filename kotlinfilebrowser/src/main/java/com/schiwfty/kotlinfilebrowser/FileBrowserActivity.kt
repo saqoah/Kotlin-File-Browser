@@ -12,6 +12,7 @@ import android.support.v7.widget.LinearLayoutManager
 import android.view.View
 import com.tbruyelle.rxpermissions.RxPermissions
 import kotlinx.android.synthetic.main.activity_file_browser.*
+import rx.subjects.PublishSubject
 import java.io.File
 
 
@@ -19,14 +20,17 @@ class FileBrowserActivity : AppCompatActivity(), FileBrowserContract.View {
 
     lateinit var presenter: FileBrowserContract.Presenter
 
+
     val adapter: FileBrowserAdapter = FileBrowserAdapter({
         presenter.fileClicked(it)
     })
 
     companion object {
-        fun open(context: Context) {
+        private val fileObservable : PublishSubject<File> = PublishSubject.create<File>()
+        fun open(context: Context): PublishSubject<File> {
             val intent = Intent(context, FileBrowserActivity::class.java)
             context.startActivity(intent)
+            return fileObservable
         }
     }
 
@@ -85,5 +89,10 @@ class FileBrowserActivity : AppCompatActivity(), FileBrowserContract.View {
     override fun showNoFilesView() {
         emptyView.visibility = View.VISIBLE
         recycler_view.visibility = View.GONE
+    }
+
+    override fun notifyFileSelected(file: File) {
+        fileObservable.onNext(file)
+        finish()
     }
 }
