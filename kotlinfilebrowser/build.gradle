@@ -33,6 +33,7 @@ dependencies {
     testCompile 'junit:junit:4.12'
     compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
     compile 'com.android.support:recyclerview-v7:25.3.1'
+    compile 'com.android.support:design:25.3.1'
 
     //RXPERMISSIONS
     compile 'com.tbruyelle.rxpermissions:rxpermissions:0.9.3@aar'

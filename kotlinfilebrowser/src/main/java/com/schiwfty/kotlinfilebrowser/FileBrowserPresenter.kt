@@ -1,28 +1,49 @@
 package com.schiwfty.kotlinfilebrowser
 
 import android.content.Context
-import android.os.Environment
 import java.io.File
 
 /**
  * Created by arran on 24/06/2017.
  */
 class FileBrowserPresenter: FileBrowserContract.Presenter {
+    private lateinit var currentFile: File
 
     lateinit var context: Context
     lateinit var view: FileBrowserContract.View
-    override fun setup(context: Context, view: FileBrowserContract.View) {
+    override fun setup(context: Context, view: FileBrowserContract.View, file: File) {
+        currentFile = file
         this.context = context
         this.view = view
     }
 
     override fun reload() {
-        val file = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).parentFile
-        view.updateView(file.listFiles().toList())
+        if(currentFile.listFiles()!=null) {
+            if(currentFile.listFiles().isEmpty()) view.showNoFilesView()
+            else{
+                view.showFileList(currentFile.listFiles().toList())
+                view.setToolbarTitle(currentFile.name)
+            }
+        }
+        else {
+            view.showError(R.string.error_accessing_file)
+            view.showNoFilesView()
+        }
+        if(currentFile.parentFile == null) view.setUpDirectoryVisible(false)
+        else view.setUpDirectoryVisible(true)
     }
 
     override fun fileClicked(file: File) {
-        if(file.isDirectory) view.updateView(file.listFiles().toList())
+        currentFile = file
+        if(file.isDirectory) reload()
+    }
+
+    override fun goUpADirectory() {
+        val newFile = currentFile.parentFile
+        if(newFile!=null){
+            currentFile = newFile
+            reload()
+        }
     }
 
 }

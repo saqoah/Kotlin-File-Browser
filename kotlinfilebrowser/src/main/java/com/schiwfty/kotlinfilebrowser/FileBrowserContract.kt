@@ -8,12 +8,17 @@ import java.io.File
  */
 interface FileBrowserContract {
     interface View{
-        fun updateView(files: List<File>)
+        fun showFileList(files: List<File>)
+        fun showError(stringId: Int)
+        fun setToolbarTitle(title: String)
+        fun showNoFilesView()
+        fun setUpDirectoryVisible(visible: Boolean)
     }
 
     interface Presenter{
-        fun setup(context: Context, view: FileBrowserContract.View)
+        fun setup(context: Context, view: FileBrowserContract.View, file: File)
         fun reload()
         fun fileClicked(file: File)
+        fun goUpADirectory()
     }
 }

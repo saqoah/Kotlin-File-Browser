@@ -45,8 +45,15 @@ class FileViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
         name.text = file.name
         if(file.isDirectory){
             icon.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_folder_black_24dp))
+            if(file.listFiles()!=null){
+                when(file.listFiles().size){
+                    1 -> info.text = context.getText(R.string.single_item)
+                    else -> info.text = context.getString(R.string.items, file.listFiles().size ?: 0)
+                }
+            }
         }else{
             icon.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_file_black_24dp))
+            info.text = file.length().formatBytesAsSize()
         }
     }
 }
