@@ -41,6 +41,9 @@ dependencies {
     //RX
     compile 'io.reactivex:rxkotlin:1.0.0'
     compile 'io.reactivex:rxandroid:1.2.1'
+
+    //Fresco
+    compile 'com.facebook.fresco:fresco:1.3.0'
 }
 repositories {
     mavenCentral()

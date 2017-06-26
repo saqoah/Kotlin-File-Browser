@@ -1,5 +1,10 @@
 package com.schiwfty.kotlinfilebrowser
 
+import java.io.File
+import com.facebook.common.util.UriUtil
+import android.net.Uri
+
+
 /**
  * Created by arran on 25/06/2017.
  */
@@ -14,4 +19,15 @@ fun Long.formatBytesAsSize(): String {
         val f = this / 1024f
         return String.format("%1$.1f kb", f)
     }
+}
+
+fun File.getMimeType(): String{
+    return android.webkit.MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension) ?: "*/*"
+}
+
+fun Int.getUriOfDrawableRes(): Uri{
+    return Uri.Builder()
+            .scheme(UriUtil.LOCAL_RESOURCE_SCHEME)
+            .path(this.toString())
+            .build()
 }
