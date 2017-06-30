@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.os.Environment
-import android.os.Handler
 import android.support.design.widget.Snackbar
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
@@ -16,7 +15,6 @@ import com.tbruyelle.rxpermissions.RxPermissions
 import kotlinx.android.synthetic.main.activity_file_browser.*
 import rx.subjects.PublishSubject
 import java.io.File
-
 
 class FileBrowserActivity : AppCompatActivity(), FileBrowserContract.View {
 
@@ -51,9 +49,13 @@ class FileBrowserActivity : AppCompatActivity(), FileBrowserContract.View {
 
     override fun setupBreadcrumbTrail(file: File) {
         breadcrumb_root_layout.removeAllViews()
-        val breadcrumb = BreadcrumbView(this)
-        breadcrumb.render("root")
-        breadcrumb_root_layout.addView(breadcrumb)
+        val rootBreadcrumb = BreadcrumbView(this)
+        rootBreadcrumb.bind(Environment.getExternalStorageDirectory())
+        rootBreadcrumb.textVeiw.text = "root"
+        rootBreadcrumb.setOnClickListener {
+            presenter.notifyBreadcrumbSelected(rootBreadcrumb.file)
+        }
+        breadcrumb_root_layout.addView(rootBreadcrumb)
 
         val fileList = mutableListOf<File>()
         var parentFile: File = file
@@ -64,7 +66,10 @@ class FileBrowserActivity : AppCompatActivity(), FileBrowserContract.View {
         fileList.reverse()
         fileList.forEach {
             val breadcrumb = BreadcrumbView(this)
-            breadcrumb.render(it.name)
+            breadcrumb.bind(it)
+            breadcrumb.setOnClickListener {
+                presenter.notifyBreadcrumbSelected(breadcrumb.file)
+            }
             breadcrumb_root_layout.addView(breadcrumb)
         }
         breadcrumbScroll.postDelayed({ breadcrumbScroll.fullScroll(HorizontalScrollView.FOCUS_RIGHT) }, 100L)

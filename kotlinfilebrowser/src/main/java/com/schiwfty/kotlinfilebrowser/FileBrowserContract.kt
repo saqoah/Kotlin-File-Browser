@@ -24,5 +24,6 @@ interface FileBrowserContract {
         fun fileClicked(file: File)
         fun goUpADirectory()
         fun isAtRoot(): Boolean
+        fun notifyBreadcrumbSelected(file:File)
     }
 }

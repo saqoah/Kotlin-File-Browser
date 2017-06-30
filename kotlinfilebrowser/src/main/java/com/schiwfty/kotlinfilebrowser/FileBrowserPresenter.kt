@@ -8,6 +8,7 @@ import java.io.File
  * Created by arran on 24/06/2017.
  */
 class FileBrowserPresenter: FileBrowserContract.Presenter {
+
     override val rootDirectory: File
         get() = Environment.getExternalStorageDirectory()
 
@@ -56,4 +57,8 @@ class FileBrowserPresenter: FileBrowserContract.Presenter {
         }
     }
 
+    override fun notifyBreadcrumbSelected(file: File) {
+        currentFile = file
+        reload()
+    }
 }
