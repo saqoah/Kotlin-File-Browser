@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal" android:layout_width="wrap_content"
+    android:layout_height="match_parent"
+    android:layout_marginBottom="6dp"
+    android:layout_marginTop="6dp"
+    android:gravity="center"
+    android:layout_marginStart="6dp">
+
+    <TextView
+        android:id="@+id/directory"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Downloads"/>
+
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        android:src="@drawable/ic_chevron_right_black_24dp" />
+
+</LinearLayout>

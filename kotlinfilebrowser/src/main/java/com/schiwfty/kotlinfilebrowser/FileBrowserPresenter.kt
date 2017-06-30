@@ -7,7 +7,7 @@ import java.io.File
  * Created by arran on 24/06/2017.
  */
 class FileBrowserPresenter: FileBrowserContract.Presenter {
-    private lateinit var currentFile: File
+    lateinit var currentFile: File
 
     lateinit var context: Context
     lateinit var view: FileBrowserContract.View
@@ -29,13 +29,17 @@ class FileBrowserPresenter: FileBrowserContract.Presenter {
             view.showError(R.string.error_accessing_file)
             view.showNoFilesView()
         }
-        if(currentFile.parentFile == null) view.setUpDirectoryVisible(false)
-        else view.setUpDirectoryVisible(true)
+        view.setupBreadcrumbTrail(currentFile)
+
+//        if(currentFile.parentFile == null) view.setUpDirectoryVisible(false)
+//        else view.setUpDirectoryVisible(true)
     }
 
     override fun fileClicked(file: File) {
         currentFile = file
-        if(file.isDirectory) reload()
+        if(file.isDirectory) {
+            reload()
+        }
         else view.notifyFileSelected(file)
     }
 

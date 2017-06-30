@@ -45,9 +45,26 @@ class FileBrowserActivity : AppCompatActivity(), FileBrowserContract.View {
         val mLayoutManager = LinearLayoutManager(this)
         recycler_view.layoutManager = mLayoutManager
         recycler_view.adapter = adapter
-        goUpButton.setOnClickListener {
-            presenter.goUpADirectory()
+//        goUpButton.setOnClickListener {
+//            presenter.goUpADirectory()
+//        }
+    }
+
+    override fun setupBreadcrumbTrail(file: File) {
+       breadcrumb_root_layout.removeAllViews()
+        val fileList = mutableListOf<File>()
+        var parentFile: File? = file
+        while (parentFile!=null){
+            fileList.add(parentFile)
+            parentFile = parentFile.parentFile
         }
+        fileList.reverse()
+        fileList.forEach{
+            val breadcrumb = BreadcrumbView(this)
+            breadcrumb.render(it.name)
+            breadcrumb_root_layout.addView(breadcrumb)
+        }
+
     }
 
     private fun checkPermission() {
@@ -79,11 +96,6 @@ class FileBrowserActivity : AppCompatActivity(), FileBrowserContract.View {
 
     override fun setToolbarTitle(title: String) {
         supportActionBar?.title = title
-    }
-
-    override fun setUpDirectoryVisible(visible: Boolean) {
-        if (visible) goUpButton.visibility = View.VISIBLE
-        else goUpButton.visibility = View.GONE
     }
 
     override fun showNoFilesView() {

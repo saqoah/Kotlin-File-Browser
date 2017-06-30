@@ -12,8 +12,8 @@ interface FileBrowserContract {
         fun showError(stringId: Int)
         fun setToolbarTitle(title: String)
         fun showNoFilesView()
-        fun setUpDirectoryVisible(visible: Boolean)
         fun notifyFileSelected(file: File)
+        fun setupBreadcrumbTrail(file: File)
     }
 
     interface Presenter{
