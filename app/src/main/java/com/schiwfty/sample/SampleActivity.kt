@@ -11,6 +11,14 @@ class SampleActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        val button = findViewById(R.id.startBrowser)
+        button.setOnClickListener {
+            startBrowser()
+        }
+        startBrowser()
+    }
+
+    fun startBrowser(){
         FileBrowserActivity.open(this).subscribe {
             Log.v("Files selected", it.name)
         }

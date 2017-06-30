@@ -1,12 +1,16 @@
 package com.schiwfty.kotlinfilebrowser
 
 import android.content.Context
+import android.os.Environment
 import java.io.File
 
 /**
  * Created by arran on 24/06/2017.
  */
 class FileBrowserPresenter: FileBrowserContract.Presenter {
+    override val rootDirectory: File
+        get() = Environment.getExternalStorageDirectory()
+
     lateinit var currentFile: File
 
     lateinit var context: Context
@@ -15,6 +19,10 @@ class FileBrowserPresenter: FileBrowserContract.Presenter {
         currentFile = file
         this.context = context
         this.view = view
+    }
+
+    override fun isAtRoot(): Boolean {
+        return currentFile == Environment.getExternalStorageDirectory()
     }
 
     override fun reload() {
@@ -30,9 +38,6 @@ class FileBrowserPresenter: FileBrowserContract.Presenter {
             view.showNoFilesView()
         }
         view.setupBreadcrumbTrail(currentFile)
-
-//        if(currentFile.parentFile == null) view.setUpDirectoryVisible(false)
-//        else view.setUpDirectoryVisible(true)
     }
 
     override fun fileClicked(file: File) {

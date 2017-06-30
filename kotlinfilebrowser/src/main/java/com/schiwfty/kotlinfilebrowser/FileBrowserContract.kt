@@ -1,6 +1,7 @@
 package com.schiwfty.kotlinfilebrowser
 
 import android.content.Context
+import android.os.Environment
 import java.io.File
 
 /**
@@ -17,9 +18,11 @@ interface FileBrowserContract {
     }
 
     interface Presenter{
+        val rootDirectory: File
         fun setup(context: Context, view: FileBrowserContract.View, file: File)
         fun reload()
         fun fileClicked(file: File)
         fun goUpADirectory()
+        fun isAtRoot(): Boolean
     }
 }

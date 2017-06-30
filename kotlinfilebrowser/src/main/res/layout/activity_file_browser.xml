@@ -17,20 +17,8 @@
         android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
-    <FrameLayout
-        android:id="@+id/emptyView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center"
-            android:text="@string/no_files"
-            android:textSize="24sp" />
-    </FrameLayout>
-
     <HorizontalScrollView
+        android:id="@+id/breadcrumbScroll"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
@@ -41,6 +29,20 @@
             android:orientation="horizontal"/>
 
     </HorizontalScrollView>
+
+    <FrameLayout
+        android:id="@+id/emptyView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="@string/no_files"
+            android:textSize="24sp" />
+    </FrameLayout>
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recycler_view"

@@ -5,11 +5,13 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.os.Environment
+import android.os.Handler
 import android.support.design.widget.Snackbar
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.view.View
+import android.widget.HorizontalScrollView
 import com.tbruyelle.rxpermissions.RxPermissions
 import kotlinx.android.synthetic.main.activity_file_browser.*
 import rx.subjects.PublishSubject
@@ -26,7 +28,7 @@ class FileBrowserActivity : AppCompatActivity(), FileBrowserContract.View {
     })
 
     companion object {
-        private val fileObservable : PublishSubject<File> = PublishSubject.create<File>()
+        private val fileObservable: PublishSubject<File> = PublishSubject.create<File>()
         fun open(context: Context): PublishSubject<File> {
             val intent = Intent(context, FileBrowserActivity::class.java)
             context.startActivity(intent)
@@ -45,26 +47,27 @@ class FileBrowserActivity : AppCompatActivity(), FileBrowserContract.View {
         val mLayoutManager = LinearLayoutManager(this)
         recycler_view.layoutManager = mLayoutManager
         recycler_view.adapter = adapter
-//        goUpButton.setOnClickListener {
-//            presenter.goUpADirectory()
-//        }
     }
 
     override fun setupBreadcrumbTrail(file: File) {
-       breadcrumb_root_layout.removeAllViews()
+        breadcrumb_root_layout.removeAllViews()
+        val breadcrumb = BreadcrumbView(this)
+        breadcrumb.render("root")
+        breadcrumb_root_layout.addView(breadcrumb)
+
         val fileList = mutableListOf<File>()
-        var parentFile: File? = file
-        while (parentFile!=null){
-            fileList.add(parentFile)
+        var parentFile: File = file
+        while (parentFile != Environment.getExternalStorageDirectory()) {
+            if (parentFile.name.isNotEmpty()) fileList.add(parentFile)
             parentFile = parentFile.parentFile
         }
         fileList.reverse()
-        fileList.forEach{
+        fileList.forEach {
             val breadcrumb = BreadcrumbView(this)
             breadcrumb.render(it.name)
             breadcrumb_root_layout.addView(breadcrumb)
         }
-
+        breadcrumbScroll.postDelayed({ breadcrumbScroll.fullScroll(HorizontalScrollView.FOCUS_RIGHT) }, 100L)
     }
 
     private fun checkPermission() {
@@ -106,5 +109,10 @@ class FileBrowserActivity : AppCompatActivity(), FileBrowserContract.View {
     override fun notifyFileSelected(file: File) {
         fileObservable.onNext(file)
         finish()
+    }
+
+    override fun onBackPressed() {
+        if (presenter.isAtRoot()) super.onBackPressed()
+        else presenter.goUpADirectory()
     }
 }
