@@ -32,9 +32,10 @@ fun Int.getUriOfDrawableRes(): Uri{
             .build()
 }
 
-fun File.search(searchTerm: String): List<File{
+fun File.search(searchTerm: String): List<File>{
     val results = mutableListOf<File>()
     walkTopDown().asIterable().forEach {
         if(it.name.contains(searchTerm)) results.add(it)
     }
+    return results
 }
