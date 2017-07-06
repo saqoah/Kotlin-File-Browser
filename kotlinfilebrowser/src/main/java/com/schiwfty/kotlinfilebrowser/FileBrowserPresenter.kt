@@ -16,6 +16,7 @@ class FileBrowserPresenter: FileBrowserContract.Presenter {
 
     lateinit var context: Context
     lateinit var view: FileBrowserContract.View
+
     override fun setup(context: Context, view: FileBrowserContract.View, file: File) {
         currentFile = file
         this.context = context
@@ -31,13 +32,14 @@ class FileBrowserPresenter: FileBrowserContract.Presenter {
             if(currentFile.listFiles().isEmpty()) view.showNoFilesView()
             else{
                 view.showFileList(currentFile.listFiles().toList())
-                view.setToolbarTitle(currentFile.name)
             }
         }
         else {
             view.showError(R.string.error_accessing_file)
             view.showNoFilesView()
         }
+        if(isAtRoot())  view.setToolbarTitle(R.string.root)
+        else view.setToolbarTitle(currentFile.name)
         view.setupBreadcrumbTrail(currentFile)
     }
 

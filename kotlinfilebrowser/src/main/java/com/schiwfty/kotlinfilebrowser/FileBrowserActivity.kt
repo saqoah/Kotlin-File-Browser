@@ -9,7 +9,6 @@ import android.support.design.widget.Snackbar
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
-import android.view.View
 import android.widget.HorizontalScrollView
 import com.tbruyelle.rxpermissions.RxPermissions
 import kotlinx.android.synthetic.main.activity_file_browser.*
@@ -41,6 +40,7 @@ class FileBrowserActivity : AppCompatActivity(), FileBrowserContract.View {
         presenter = FileBrowserPresenter()
         presenter.setup(this, this, Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).parentFile)
         checkPermission()
+
         recycler_view.setHasFixedSize(true)
         val mLayoutManager = LinearLayoutManager(this)
         recycler_view.layoutManager = mLayoutManager
@@ -51,7 +51,7 @@ class FileBrowserActivity : AppCompatActivity(), FileBrowserContract.View {
         breadcrumb_root_layout.removeAllViews()
         val rootBreadcrumb = BreadcrumbView(this)
         rootBreadcrumb.bind(Environment.getExternalStorageDirectory())
-        rootBreadcrumb.textVeiw.text = "root"
+        rootBreadcrumb.textVeiw.text = getString(R.string.root)
         rootBreadcrumb.setOnClickListener {
             presenter.notifyBreadcrumbSelected(rootBreadcrumb.file)
         }
@@ -92,8 +92,8 @@ class FileBrowserActivity : AppCompatActivity(), FileBrowserContract.View {
     override fun showFileList(files: List<File>) {
         adapter.files = files
         adapter.notifyDataSetChanged()
-        emptyView.visibility = View.GONE
-        recycler_view.visibility = View.VISIBLE
+//        emptyView.visibility = View.GONE
+//        recycler_view.visibility = View.VISIBLE
     }
 
     override fun showError(stringId: Int) {
@@ -106,9 +106,13 @@ class FileBrowserActivity : AppCompatActivity(), FileBrowserContract.View {
         supportActionBar?.title = title
     }
 
+    override fun setToolbarTitle(stringRes: Int) {
+        supportActionBar?.title = getString(stringRes)
+    }
+
     override fun showNoFilesView() {
-        emptyView.visibility = View.VISIBLE
-        recycler_view.visibility = View.GONE
+//        emptyView.visibility = View.VISIBLE
+//        recycler_view.visibility = View.GONE
     }
 
     override fun notifyFileSelected(file: File) {
@@ -120,4 +124,5 @@ class FileBrowserActivity : AppCompatActivity(), FileBrowserContract.View {
         if (presenter.isAtRoot()) super.onBackPressed()
         else presenter.goUpADirectory()
     }
+
 }

@@ -4,4 +4,10 @@
     <string name="no_files">Empty</string>
     <string name="items">%1$d items</string>
     <string name="single_item">1 item</string>
+    <string name="root">root</string>
+    <string name="file">file</string>
+    <string name="folder">folder</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
