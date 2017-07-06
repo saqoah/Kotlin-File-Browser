@@ -84,7 +84,7 @@
         fab:fab_labelsPosition="left">
 
         <com.getbase.floatingactionbutton.FloatingActionButton
-            android:id="@+id/addHashFab"
+            android:id="@+id/addFileFab"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:fab_title="@string/file"
@@ -94,7 +94,7 @@
 
 
         <com.getbase.floatingactionbutton.FloatingActionButton
-            android:id="@+id/addMagnetFab"
+            android:id="@+id/addFolderFab"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:fab_title="@string/folder"

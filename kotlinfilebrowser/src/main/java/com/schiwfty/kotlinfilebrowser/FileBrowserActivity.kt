@@ -9,11 +9,18 @@ import android.support.design.widget.Snackbar
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
+import android.widget.EditText
 import android.widget.HorizontalScrollView
 import com.tbruyelle.rxpermissions.RxPermissions
 import kotlinx.android.synthetic.main.activity_file_browser.*
 import rx.subjects.PublishSubject
 import java.io.File
+import com.afollestad.materialdialogs.MaterialDialog
+
+
+
+
+
 
 class FileBrowserActivity : AppCompatActivity(), FileBrowserContract.View {
 
@@ -45,6 +52,33 @@ class FileBrowserActivity : AppCompatActivity(), FileBrowserContract.View {
         val mLayoutManager = LinearLayoutManager(this)
         recycler_view.layoutManager = mLayoutManager
         recycler_view.adapter = adapter
+
+        addFileFab.setOnClickListener {
+            MaterialDialog.Builder(this)
+                    .title(R.string.new_file)
+                    .customView(R.layout.dialog_add_item, false)
+                    .positiveText(android.R.string.ok)
+                    .onPositive { dialog, _ ->
+                        RxPermissions(this)
+                                .request(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                                .subscribe({
+                                    if (it != null && it) {
+                                        val edittext = dialog.customView?.findViewById(R.id.fileNameInput) as EditText
+                                        presenter.createFileAtCurrentDirectory(edittext.text.toString())
+                                        presenter.reload()
+                                    } else {
+                                        throw IllegalStateException("permission is required to show files browser")
+                                    }
+                                }, {
+                                    it.printStackTrace()
+                                })
+                    }
+                    .onNegative { dialog, _ ->
+                        dialog.dismiss()
+                    }
+                    .negativeText(android.R.string.cancel)
+                    .show()
+        }
     }
 
     override fun setupBreadcrumbTrail(file: File) {

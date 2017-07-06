@@ -26,5 +26,7 @@ interface FileBrowserContract {
         fun goUpADirectory()
         fun isAtRoot(): Boolean
         fun notifyBreadcrumbSelected(file:File)
+        fun createFileAtCurrentDirectory(name: String)
+        fun createFolderAtCurrencyDirecory(name: String)
     }
 }
