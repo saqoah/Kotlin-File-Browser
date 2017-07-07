@@ -21,4 +21,10 @@
         android:layout_height="wrap_content"
         android:text="start browser"/>
 
+    <Button
+        android:id="@+id/startBrowserInViewOnlyMode"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="start browser in view only mode"/>
+
 </android.support.constraint.ConstraintLayout>

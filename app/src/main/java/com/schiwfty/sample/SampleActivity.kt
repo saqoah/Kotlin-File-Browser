@@ -1,9 +1,8 @@
 package com.schiwfty.sample
 
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.v7.app.AppCompatActivity
 import android.util.Log
-
 import com.schiwfty.kotlinfilebrowser.FileBrowserActivity
 
 class SampleActivity : AppCompatActivity() {
@@ -12,15 +11,20 @@ class SampleActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         val button = findViewById(R.id.startBrowser)
+        val button2  = findViewById(R.id.startBrowserInViewOnlyMode)
+
         button.setOnClickListener {
-            startBrowser()
+            FileBrowserActivity.open(this, false).subscribe {
+                Log.v("Files selected", it.name)
+            }
         }
-        startBrowser()
+
+        button2.setOnClickListener {
+            FileBrowserActivity.open(this, true).subscribe {
+                Log.v("Files selected", it.name)
+            }
+        }
+
     }
 
-    fun startBrowser(){
-        FileBrowserActivity.open(this, true).subscribe {
-            Log.v("Files selected", it.name)
-        }
-    }
 }
