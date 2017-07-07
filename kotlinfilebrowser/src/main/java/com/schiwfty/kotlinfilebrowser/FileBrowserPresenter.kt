@@ -16,6 +16,7 @@ class FileBrowserPresenter : FileBrowserContract.Presenter {
 
     lateinit var context: Context
     lateinit var view: FileBrowserContract.View
+    var viewOnlyMode = false
 
     override fun deleteFile(file: File) {
         try {
@@ -53,10 +54,10 @@ class FileBrowserPresenter : FileBrowserContract.Presenter {
                 } else view.notifyFileSelected(file)
             }
             FileBrowserAdapter.FILE_ACTION.DELETE -> {
-                view.showDeleteFileDialog(file)
+                if(!viewOnlyMode) view.showDeleteFileDialog(file)
             }
             FileBrowserAdapter.FILE_ACTION.RENAME -> {
-                view.showRenameFileDialog(file)
+                if(!viewOnlyMode) view.showRenameFileDialog(file)
             }
         }
     }
@@ -100,7 +101,8 @@ class FileBrowserPresenter : FileBrowserContract.Presenter {
         }
     }
 
-    override fun setup(context: Context, view: FileBrowserContract.View, file: File) {
+    override fun setup(context: Context, view: FileBrowserContract.View, viewOnlyMode: Boolean, file: File) {
+        this.viewOnlyMode = viewOnlyMode
         currentFile = file
         this.context = context
         this.view = view

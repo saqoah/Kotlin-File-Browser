@@ -24,7 +24,7 @@ interface FileBrowserContract {
 
     interface Presenter{
         val rootDirectory: File
-        fun setup(context: Context, view: FileBrowserContract.View, file: File)
+        fun setup(context: Context, view: FileBrowserContract.View, viewOnlyMode: Boolean, file: File)
         fun reload()
         fun goUpADirectory()
         fun isAtRoot(): Boolean

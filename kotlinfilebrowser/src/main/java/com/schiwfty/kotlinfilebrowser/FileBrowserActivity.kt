@@ -28,9 +28,11 @@ class FileBrowserActivity : AppCompatActivity(), FileBrowserContract.View {
     })
 
     companion object {
+        val ARG_EDIT_MODE = "arg_edit_mode"
         private val fileObservable: PublishSubject<File> = PublishSubject.create<File>()
-        fun open(context: Context): PublishSubject<File> {
+        fun open(context: Context, viewOnlyMode: Boolean): PublishSubject<File> {
             val intent = Intent(context, FileBrowserActivity::class.java)
+            intent.putExtra(ARG_EDIT_MODE, viewOnlyMode)
             context.startActivity(intent)
             return fileObservable
         }
@@ -40,8 +42,9 @@ class FileBrowserActivity : AppCompatActivity(), FileBrowserContract.View {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_file_browser)
         setSupportActionBar(toolbar)
+        val viewOnlyMode = intent.getBooleanExtra(ARG_EDIT_MODE, false)
         presenter = FileBrowserPresenter()
-        presenter.setup(this, this, Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).parentFile)
+        presenter.setup(this, this, viewOnlyMode, Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).parentFile)
         checkPermission()
 
         recycler_view.setHasFixedSize(true)
@@ -55,6 +58,11 @@ class FileBrowserActivity : AppCompatActivity(), FileBrowserContract.View {
 
         addFolderFab.setOnClickListener {
             showAddFolderDialog()
+        }
+
+
+        if(viewOnlyMode){
+            fab.visibility = View.GONE
         }
     }
 

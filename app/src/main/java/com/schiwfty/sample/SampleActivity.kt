@@ -19,7 +19,7 @@ class SampleActivity : AppCompatActivity() {
     }
 
     fun startBrowser(){
-        FileBrowserActivity.open(this).subscribe {
+        FileBrowserActivity.open(this, true).subscribe {
             Log.v("Files selected", it.name)
         }
     }
