@@ -1,23 +1,43 @@
 package com.schiwfty.kotlinfilebrowser
 
-import android.Manifest
 import android.content.Context
 import android.os.Environment
-import android.widget.EditText
-import com.afollestad.materialdialogs.MaterialDialog
-import com.tbruyelle.rxpermissions.RxPermissions
 import java.io.File
 
 /**
  * Created by arran on 24/06/2017.
  */
 class FileBrowserPresenter : FileBrowserContract.Presenter {
+
+    override val rootDirectory: File
+        get() = Environment.getExternalStorageDirectory()
+
+    lateinit var currentFile: File
+
+    lateinit var context: Context
+    lateinit var view: FileBrowserContract.View
+
+    override fun deleteFile(file: File) {
+        try {
+            val deleted = file.deleteRecursively()
+            if (!deleted) {
+                if (file.isDirectory) view.showError(R.string.error_creating_folder)
+                else view.showError(R.string.error_deleting_file)
+            }else{
+                reload()
+            }
+        } catch (e: Exception) {
+            if (file.isDirectory) view.showError(R.string.error_creating_folder)
+            else view.showError(R.string.error_deleting_file)
+        }
+    }
+
     override fun renameFile(file: File, name: String) {
         val directory = file.parentFile.absoluteFile
         val newFile = File(directory, name)
         try {
             file.renameTo(newFile)
-        }catch (e: Exception){
+        } catch (e: Exception) {
             if (file.isDirectory) view.showError(R.string.error_renaming_folder)
             else view.showError(R.string.error_renaming_file)
         }
@@ -33,7 +53,7 @@ class FileBrowserPresenter : FileBrowserContract.Presenter {
                 } else view.notifyFileSelected(file)
             }
             FileBrowserAdapter.FILE_ACTION.DELETE -> {
-
+                view.showDeleteFileDialog(file)
             }
             FileBrowserAdapter.FILE_ACTION.RENAME -> {
                 view.showRenameFileDialog(file)
@@ -77,19 +97,8 @@ class FileBrowserPresenter : FileBrowserContract.Presenter {
             } else {
                 view.showError(R.string.cannot_create_folder)
             }
-
         }
-
-
     }
-
-    override val rootDirectory: File
-        get() = Environment.getExternalStorageDirectory()
-
-    lateinit var currentFile: File
-
-    lateinit var context: Context
-    lateinit var view: FileBrowserContract.View
 
     override fun setup(context: Context, view: FileBrowserContract.View, file: File) {
         currentFile = file

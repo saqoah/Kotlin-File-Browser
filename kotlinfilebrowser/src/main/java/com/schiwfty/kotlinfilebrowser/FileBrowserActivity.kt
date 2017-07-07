@@ -23,7 +23,7 @@ class FileBrowserActivity : AppCompatActivity(), FileBrowserContract.View {
 
     lateinit var presenter: FileBrowserContract.Presenter
 
-    val adapter: FileBrowserAdapter = FileBrowserAdapter({file, action ->
+    val adapter: FileBrowserAdapter = FileBrowserAdapter({ file, action ->
         presenter.performFileAction(file, action)
     })
 
@@ -50,11 +50,11 @@ class FileBrowserActivity : AppCompatActivity(), FileBrowserContract.View {
         recycler_view.adapter = adapter
 
         addFileFab.setOnClickListener {
-           showAddFileDialog()
+            showAddFileDialog()
         }
 
         addFolderFab.setOnClickListener {
-           showAddFolderDialog()
+            showAddFolderDialog()
         }
     }
 
@@ -214,4 +214,31 @@ class FileBrowserActivity : AppCompatActivity(), FileBrowserContract.View {
                 .show()
     }
 
+    override fun showDeleteFileDialog(file: File) {
+        var content = ""
+        if (file.isDirectory) content = getString(R.string.confirm_delete_folder, file.name)
+        else content = getString(R.string.confirm_delete_file, file.name)
+        MaterialDialog.Builder(this)
+                .title(R.string.delete_file)
+                .content(content)
+                .positiveText(android.R.string.ok)
+                .onPositive { dialog, _ ->
+                    RxPermissions(this)
+                            .request(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                            .subscribe({
+                                if (it != null && it) {
+                                    presenter.deleteFile(file)
+                                } else {
+                                    throw IllegalStateException("permission is required to show files browser")
+                                }
+                            }, {
+                                it.printStackTrace()
+                            })
+                }
+                .onNegative { dialog, _ ->
+                    dialog.dismiss()
+                }
+                .negativeText(android.R.string.cancel)
+                .show()
+    }
 }

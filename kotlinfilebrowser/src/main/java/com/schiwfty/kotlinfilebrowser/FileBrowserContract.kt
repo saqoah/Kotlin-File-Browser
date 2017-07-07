@@ -19,6 +19,7 @@ interface FileBrowserContract {
         fun showAddFileDialog()
         fun showAddFolderDialog()
         fun showRenameFileDialog(file: File)
+        fun showDeleteFileDialog(file: File)
     }
 
     interface Presenter{
@@ -31,6 +32,7 @@ interface FileBrowserContract {
         fun createFileAtCurrentDirectory(name: String)
         fun createFolderAtCurrentDirectory(name: String)
         fun performFileAction(file: File, action: FileBrowserAdapter.FILE_ACTION)
-        fun  renameFile(file: File, name: String)
+        fun renameFile(file: File, name: String)
+        fun deleteFile(file: File)
     }
 }
