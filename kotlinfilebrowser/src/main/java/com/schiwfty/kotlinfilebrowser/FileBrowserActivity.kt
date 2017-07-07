@@ -12,24 +12,19 @@ import android.support.v7.widget.LinearLayoutManager
 import android.view.View
 import android.widget.EditText
 import android.widget.HorizontalScrollView
+import com.afollestad.materialdialogs.MaterialDialog
 import com.tbruyelle.rxpermissions.RxPermissions
 import kotlinx.android.synthetic.main.activity_file_browser.*
 import rx.subjects.PublishSubject
 import java.io.File
-import com.afollestad.materialdialogs.MaterialDialog
-
-
-
-
 
 
 class FileBrowserActivity : AppCompatActivity(), FileBrowserContract.View {
 
     lateinit var presenter: FileBrowserContract.Presenter
 
-
-    val adapter: FileBrowserAdapter = FileBrowserAdapter({
-        presenter.fileClicked(it)
+    val adapter: FileBrowserAdapter = FileBrowserAdapter({file, action ->
+        presenter.performFileAction(file, action)
     })
 
     companion object {
@@ -55,55 +50,11 @@ class FileBrowserActivity : AppCompatActivity(), FileBrowserContract.View {
         recycler_view.adapter = adapter
 
         addFileFab.setOnClickListener {
-            MaterialDialog.Builder(this)
-                    .title(R.string.new_file)
-                    .customView(R.layout.dialog_add_file, false)
-                    .positiveText(android.R.string.ok)
-                    .onPositive { dialog, _ ->
-                        RxPermissions(this)
-                                .request(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                                .subscribe({
-                                    if (it != null && it) {
-                                        val edittext = dialog.customView?.findViewById(R.id.fileNameInput) as EditText
-                                        presenter.createFileAtCurrentDirectory(edittext.text.toString())
-                                    } else {
-                                        throw IllegalStateException("permission is required to show files browser")
-                                    }
-                                }, {
-                                    it.printStackTrace()
-                                })
-                    }
-                    .onNegative { dialog, _ ->
-                        dialog.dismiss()
-                    }
-                    .negativeText(android.R.string.cancel)
-                    .show()
+           showAddFileDialog()
         }
 
         addFolderFab.setOnClickListener {
-            MaterialDialog.Builder(this)
-                    .title(R.string.new_folder)
-                    .customView(R.layout.dialog_add_folder, false)
-                    .positiveText(android.R.string.ok)
-                    .onPositive { dialog, _ ->
-                        RxPermissions(this)
-                                .request(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                                .subscribe({
-                                    if (it != null && it) {
-                                        val edittext = dialog.customView?.findViewById(R.id.folderNameInput) as EditText
-                                        presenter.createFolderAtCurrentDirectory(edittext.text.toString())
-                                    } else {
-                                        throw IllegalStateException("permission is required to show files browser")
-                                    }
-                                }, {
-                                    it.printStackTrace()
-                                })
-                    }
-                    .onNegative { dialog, _ ->
-                        dialog.dismiss()
-                    }
-                    .negativeText(android.R.string.cancel)
-                    .show()
+           showAddFolderDialog()
         }
     }
 
@@ -183,6 +134,84 @@ class FileBrowserActivity : AppCompatActivity(), FileBrowserContract.View {
     override fun onBackPressed() {
         if (presenter.isAtRoot()) super.onBackPressed()
         else presenter.goUpADirectory()
+    }
+
+    override fun showAddFileDialog() {
+        MaterialDialog.Builder(this)
+                .title(R.string.new_file)
+                .customView(R.layout.dialog_add_file, false)
+                .positiveText(android.R.string.ok)
+                .onPositive { dialog, _ ->
+                    RxPermissions(this)
+                            .request(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                            .subscribe({
+                                if (it != null && it) {
+                                    val edittext = dialog.customView?.findViewById(R.id.fileNameInput) as EditText
+                                    presenter.createFileAtCurrentDirectory(edittext.text.toString())
+                                } else {
+                                    throw IllegalStateException("permission is required to show files browser")
+                                }
+                            }, {
+                                it.printStackTrace()
+                            })
+                }
+                .onNegative { dialog, _ ->
+                    dialog.dismiss()
+                }
+                .negativeText(android.R.string.cancel)
+                .show()
+    }
+
+    override fun showAddFolderDialog() {
+        MaterialDialog.Builder(this)
+                .title(R.string.new_folder)
+                .customView(R.layout.dialog_add_folder, false)
+                .positiveText(android.R.string.ok)
+                .onPositive { dialog, _ ->
+                    RxPermissions(this)
+                            .request(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                            .subscribe({
+                                if (it != null && it) {
+                                    val edittext = dialog.customView?.findViewById(R.id.folderNameInput) as EditText
+                                    presenter.createFolderAtCurrentDirectory(edittext.text.toString())
+                                } else {
+                                    throw IllegalStateException("permission is required to show files browser")
+                                }
+                            }, {
+                                it.printStackTrace()
+                            })
+                }
+                .onNegative { dialog, _ ->
+                    dialog.dismiss()
+                }
+                .negativeText(android.R.string.cancel)
+                .show()
+    }
+
+    override fun showRenameFileDialog(file: File) {
+        MaterialDialog.Builder(this)
+                .title(R.string.rename_file)
+                .customView(R.layout.dialog_rename_file, false)
+                .positiveText(android.R.string.ok)
+                .onPositive { dialog, _ ->
+                    RxPermissions(this)
+                            .request(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                            .subscribe({
+                                if (it != null && it) {
+                                    val edittext = dialog.customView?.findViewById(R.id.renameFileInput) as EditText
+                                    presenter.renameFile(file, edittext.text.toString())
+                                } else {
+                                    throw IllegalStateException("permission is required to show files browser")
+                                }
+                            }, {
+                                it.printStackTrace()
+                            })
+                }
+                .onNegative { dialog, _ ->
+                    dialog.dismiss()
+                }
+                .negativeText(android.R.string.cancel)
+                .show()
     }
 
 }

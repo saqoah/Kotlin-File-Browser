@@ -1,13 +1,46 @@
 package com.schiwfty.kotlinfilebrowser
 
+import android.Manifest
 import android.content.Context
 import android.os.Environment
+import android.widget.EditText
+import com.afollestad.materialdialogs.MaterialDialog
+import com.tbruyelle.rxpermissions.RxPermissions
 import java.io.File
 
 /**
  * Created by arran on 24/06/2017.
  */
 class FileBrowserPresenter : FileBrowserContract.Presenter {
+    override fun renameFile(file: File, name: String) {
+        val directory = file.parentFile.absoluteFile
+        val newFile = File(directory, name)
+        try {
+            file.renameTo(newFile)
+        }catch (e: Exception){
+            if (file.isDirectory) view.showError(R.string.error_renaming_folder)
+            else view.showError(R.string.error_renaming_file)
+        }
+        reload()
+    }
+
+    override fun performFileAction(file: File, action: FileBrowserAdapter.FILE_ACTION) {
+        when (action) {
+            FileBrowserAdapter.FILE_ACTION.CLICK -> {
+                currentFile = file
+                if (file.isDirectory) {
+                    reload()
+                } else view.notifyFileSelected(file)
+            }
+            FileBrowserAdapter.FILE_ACTION.DELETE -> {
+
+            }
+            FileBrowserAdapter.FILE_ACTION.RENAME -> {
+                view.showRenameFileDialog(file)
+            }
+        }
+    }
+
     override fun createFileAtCurrentDirectory(name: String) {
         val newFile = File(currentFile.absolutePath, name)
         if (!newFile.exists()) {
@@ -29,20 +62,19 @@ class FileBrowserPresenter : FileBrowserContract.Presenter {
 
     override fun createFolderAtCurrentDirectory(name: String) {
         val testFolder = File(currentFile.absolutePath, name)
-        if(testFolder.exists() && testFolder.isDirectory){
+        if (testFolder.exists() && testFolder.isDirectory) {
             view.showError(R.string.folder_already_exists)
-        }else{
-            if(currentFile.canWrite()) {
+        } else {
+            if (currentFile.canWrite()) {
                 try {
                     val newFolder = File(currentFile.absolutePath, name)
                     newFolder.mkdirs()
                     reload()
-                }catch (e: Exception){
+                } catch (e: Exception) {
                     view.showError(R.string.error_creating_folder)
                     e.printStackTrace()
                 }
-
-            }else{
+            } else {
                 view.showError(R.string.cannot_create_folder)
             }
 
@@ -84,12 +116,6 @@ class FileBrowserPresenter : FileBrowserContract.Presenter {
         view.setupBreadcrumbTrail(currentFile)
     }
 
-    override fun fileClicked(file: File) {
-        currentFile = file
-        if (file.isDirectory) {
-            reload()
-        } else view.notifyFileSelected(file)
-    }
 
     override fun goUpADirectory() {
         val newFile = currentFile.parentFile

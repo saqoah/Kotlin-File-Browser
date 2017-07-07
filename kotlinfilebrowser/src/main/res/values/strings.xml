@@ -15,11 +15,19 @@
     <string name="cannot_create_folder">You do not have permission to create a folder here</string>
     <string name="error_creating_folder">Error, could not create folder</string>
 
+    <string name="error_renaming_file">Error, could not rename file</string>
+    <string name="error_renaming_folder">Error, could not rename folder</string>
+
+
     <string name="new_file">New File</string>
     <string name="new_folder">New Folder</string>
+    <string name="rename_file">Rename File</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="enter_folder_name">enter folder name</string>
     <string name="enter_file_name">enter file name</string>
+    <string name="enter_new_name">enter new name</string>
+    <string name="rename">Rename</string>
+    <string name="delete">Delete</string>
 </resources>

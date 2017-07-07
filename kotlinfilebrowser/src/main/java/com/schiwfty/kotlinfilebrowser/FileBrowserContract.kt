@@ -16,17 +16,21 @@ interface FileBrowserContract {
         fun notifyFileSelected(file: File)
         fun setupBreadcrumbTrail(file: File)
         fun setToolbarTitle(stringRes: Int)
+        fun showAddFileDialog()
+        fun showAddFolderDialog()
+        fun showRenameFileDialog(file: File)
     }
 
     interface Presenter{
         val rootDirectory: File
         fun setup(context: Context, view: FileBrowserContract.View, file: File)
         fun reload()
-        fun fileClicked(file: File)
         fun goUpADirectory()
         fun isAtRoot(): Boolean
         fun notifyBreadcrumbSelected(file:File)
         fun createFileAtCurrentDirectory(name: String)
         fun createFolderAtCurrentDirectory(name: String)
+        fun performFileAction(file: File, action: FileBrowserAdapter.FILE_ACTION)
+        fun  renameFile(file: File, name: String)
     }
 }
