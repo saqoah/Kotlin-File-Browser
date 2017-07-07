@@ -14,6 +14,7 @@ class FileBrowserPresenter : FileBrowserContract.Presenter {
             if (currentFile.canWrite()) {
                 try {
                     newFile.createNewFile()
+                    reload()
                 } catch (e: Exception) {
                     view.showError(R.string.error_creating_file)
                     e.printStackTrace()
@@ -26,7 +27,27 @@ class FileBrowserPresenter : FileBrowserContract.Presenter {
         }
     }
 
-    override fun createFolderAtCurrencyDirecory(name: String) {
+    override fun createFolderAtCurrentDirectory(name: String) {
+        val testFolder = File(currentFile.absolutePath, name)
+        if(testFolder.exists() && testFolder.isDirectory){
+            view.showError(R.string.folder_already_exists)
+        }else{
+            if(currentFile.canWrite()) {
+                try {
+                    val newFolder = File(currentFile.absolutePath, name)
+                    newFolder.mkdirs()
+                    reload()
+                }catch (e: Exception){
+                    view.showError(R.string.error_creating_folder)
+                    e.printStackTrace()
+                }
+
+            }else{
+                view.showError(R.string.cannot_create_folder)
+            }
+
+        }
+
 
     }
 

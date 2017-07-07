@@ -9,6 +9,7 @@ import android.support.design.widget.Snackbar
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
+import android.view.View
 import android.widget.EditText
 import android.widget.HorizontalScrollView
 import com.tbruyelle.rxpermissions.RxPermissions
@@ -56,7 +57,7 @@ class FileBrowserActivity : AppCompatActivity(), FileBrowserContract.View {
         addFileFab.setOnClickListener {
             MaterialDialog.Builder(this)
                     .title(R.string.new_file)
-                    .customView(R.layout.dialog_add_item, false)
+                    .customView(R.layout.dialog_add_file, false)
                     .positiveText(android.R.string.ok)
                     .onPositive { dialog, _ ->
                         RxPermissions(this)
@@ -65,7 +66,32 @@ class FileBrowserActivity : AppCompatActivity(), FileBrowserContract.View {
                                     if (it != null && it) {
                                         val edittext = dialog.customView?.findViewById(R.id.fileNameInput) as EditText
                                         presenter.createFileAtCurrentDirectory(edittext.text.toString())
-                                        presenter.reload()
+                                    } else {
+                                        throw IllegalStateException("permission is required to show files browser")
+                                    }
+                                }, {
+                                    it.printStackTrace()
+                                })
+                    }
+                    .onNegative { dialog, _ ->
+                        dialog.dismiss()
+                    }
+                    .negativeText(android.R.string.cancel)
+                    .show()
+        }
+
+        addFolderFab.setOnClickListener {
+            MaterialDialog.Builder(this)
+                    .title(R.string.new_folder)
+                    .customView(R.layout.dialog_add_folder, false)
+                    .positiveText(android.R.string.ok)
+                    .onPositive { dialog, _ ->
+                        RxPermissions(this)
+                                .request(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                                .subscribe({
+                                    if (it != null && it) {
+                                        val edittext = dialog.customView?.findViewById(R.id.folderNameInput) as EditText
+                                        presenter.createFolderAtCurrentDirectory(edittext.text.toString())
                                     } else {
                                         throw IllegalStateException("permission is required to show files browser")
                                     }
@@ -126,8 +152,8 @@ class FileBrowserActivity : AppCompatActivity(), FileBrowserContract.View {
     override fun showFileList(files: List<File>) {
         adapter.files = files
         adapter.notifyDataSetChanged()
-//        emptyView.visibility = View.GONE
-//        recycler_view.visibility = View.VISIBLE
+        emptyView.visibility = View.GONE
+        recycler_view.visibility = View.VISIBLE
     }
 
     override fun showError(stringId: Int) {
@@ -145,8 +171,8 @@ class FileBrowserActivity : AppCompatActivity(), FileBrowserContract.View {
     }
 
     override fun showNoFilesView() {
-//        emptyView.visibility = View.VISIBLE
-//        recycler_view.visibility = View.GONE
+        emptyView.visibility = View.VISIBLE
+        recycler_view.visibility = View.GONE
     }
 
     override fun notifyFileSelected(file: File) {

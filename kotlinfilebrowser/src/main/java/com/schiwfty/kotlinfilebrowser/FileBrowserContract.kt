@@ -27,6 +27,6 @@ interface FileBrowserContract {
         fun isAtRoot(): Boolean
         fun notifyBreadcrumbSelected(file:File)
         fun createFileAtCurrentDirectory(name: String)
-        fun createFolderAtCurrencyDirecory(name: String)
+        fun createFolderAtCurrentDirectory(name: String)
     }
 }
