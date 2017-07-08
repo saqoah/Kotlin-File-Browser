@@ -13,7 +13,6 @@ import java.io.File
  */
 class FileBrowserAdapter(val itemClickListener: (File, FILE_ACTION) -> Unit) : RecyclerView.Adapter<FileViewHolder>() {
     var files: List<File> = emptyList()
-    var viewOnlyMode: Boolean = false
 
     enum class FILE_ACTION {
         CLICK,
@@ -37,26 +36,23 @@ class FileBrowserAdapter(val itemClickListener: (File, FILE_ACTION) -> Unit) : R
             itemClickListener.invoke(files[position], FILE_ACTION.CLICK)
         }
         holder.onLongClick { view, position, type ->
-            if(!viewOnlyMode) false
-            else{
-                val popupMenu = PopupMenu(view.context, view)
-                popupMenu.inflate(R.menu.menu_file_long_click)
-                popupMenu.setOnMenuItemClickListener {
-                    when (it.itemId) {
-                        R.id.delete -> {
-                            itemClickListener.invoke(files[position], FILE_ACTION.DELETE)
-                            true
-                        }
-                        R.id.rename -> {
-                            itemClickListener.invoke(files[position], FILE_ACTION.RENAME)
-                            true
-                        }
-                        else -> false
+            val popupMenu = PopupMenu(view.context, view)
+            popupMenu.inflate(R.menu.menu_file_long_click)
+            popupMenu.setOnMenuItemClickListener {
+                when (it.itemId) {
+                    R.id.delete -> {
+                        itemClickListener.invoke(files[position], FILE_ACTION.DELETE)
+                        true
                     }
-
+                    R.id.rename -> {
+                        itemClickListener.invoke(files[position], FILE_ACTION.RENAME)
+                        true
+                    }
+                    else -> false
                 }
-                popupMenu.show()
+
             }
+            popupMenu.show()
         }
         return holder
 

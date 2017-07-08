@@ -11,16 +11,9 @@ class SampleActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         val button = findViewById(R.id.startBrowser)
-        val button2  = findViewById(R.id.startBrowserInViewOnlyMode)
 
         button.setOnClickListener {
-            FileBrowserActivity.open(this, false).subscribe {
-                Log.v("Files selected", it.name)
-            }
-        }
-
-        button2.setOnClickListener {
-            FileBrowserActivity.open(this, true).subscribe {
+            FileBrowserActivity.open(this).subscribe {
                 Log.v("Files selected", it.name)
             }
         }
