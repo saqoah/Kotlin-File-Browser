@@ -1,6 +1,7 @@
 package com.schiwfty.kotlinfilebrowser
 
 import android.Manifest
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -15,7 +16,6 @@ import android.widget.HorizontalScrollView
 import com.afollestad.materialdialogs.MaterialDialog
 import com.tbruyelle.rxpermissions.RxPermissions
 import kotlinx.android.synthetic.main.activity_file_browser.*
-import rx.subjects.PublishSubject
 import java.io.File
 
 
@@ -28,11 +28,9 @@ class FileBrowserActivity : AppCompatActivity(), FileBrowserContract.View {
     })
 
     companion object {
-        private val fileObservable: PublishSubject<File> = PublishSubject.create<File>()
-        fun open(context: Context): PublishSubject<File> {
-            val intent = Intent(context, FileBrowserActivity::class.java)
-            context.startActivity(intent)
-            return fileObservable
+        const val ARG_FILE_RESULT = "arg_file_selected_result"
+        fun getIntent(context: Context): Intent {
+            return Intent(context, FileBrowserActivity::class.java)
         }
     }
 
@@ -127,7 +125,9 @@ class FileBrowserActivity : AppCompatActivity(), FileBrowserContract.View {
     }
 
     override fun notifyFileSelected(file: File) {
-        fileObservable.onNext(file)
+        val returnIntent = Intent()
+        returnIntent.extras.putSerializable(ARG_FILE_RESULT, file)
+        setResult(Activity.RESULT_OK, returnIntent)
         finish()
     }
 
