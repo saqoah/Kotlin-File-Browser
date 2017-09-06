@@ -16,9 +16,7 @@ class SampleActivity : AppCompatActivity() {
         val button = findViewById(R.id.startBrowser)
 
         button.setOnClickListener {
-            //CLean this up to get intent
-            val intent = FileBrowserActivity.getIntent(this)
-            startActivityForResult(intent, RC_SELECT_FILE)
+            FileBrowserActivity.startActivity(this, RC_SELECT_FILE)
         }
 
     }

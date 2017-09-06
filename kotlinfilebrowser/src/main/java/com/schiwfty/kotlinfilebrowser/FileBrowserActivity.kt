@@ -29,8 +29,9 @@ class FileBrowserActivity : AppCompatActivity(), FileBrowserContract.View {
 
     companion object {
         const val ARG_FILE_RESULT = "arg_file_selected_result"
-        fun getIntent(context: Context): Intent {
-            return Intent(context, FileBrowserActivity::class.java)
+        fun startActivity(activity: Activity, requestCode: Int) {
+            val intent = Intent(activity, FileBrowserActivity::class.java)
+            activity.startActivityForResult(intent, requestCode)
         }
     }
 
@@ -126,7 +127,7 @@ class FileBrowserActivity : AppCompatActivity(), FileBrowserContract.View {
 
     override fun notifyFileSelected(file: File) {
         val returnIntent = Intent()
-        returnIntent.extras.putSerializable(ARG_FILE_RESULT, file)
+        returnIntent.putExtra(ARG_FILE_RESULT, file)
         setResult(Activity.RESULT_OK, returnIntent)
         finish()
     }
