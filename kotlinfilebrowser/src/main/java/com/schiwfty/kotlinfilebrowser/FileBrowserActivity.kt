@@ -2,7 +2,6 @@ package com.schiwfty.kotlinfilebrowser
 
 import android.Manifest
 import android.app.Activity
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.os.Environment
@@ -43,10 +42,10 @@ class FileBrowserActivity : AppCompatActivity(), FileBrowserContract.View {
         presenter.setup(this, this, Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).parentFile)
         checkPermission()
 
-        recycler_view.setHasFixedSize(true)
+        fileBrowserRecyclerView.setHasFixedSize(true)
         val mLayoutManager = LinearLayoutManager(this)
-        recycler_view.layoutManager = mLayoutManager
-        recycler_view.adapter = adapter
+        fileBrowserRecyclerView.layoutManager = mLayoutManager
+        fileBrowserRecyclerView.adapter = adapter
 
         addFileFab.setOnClickListener {
             showAddFileDialog()
@@ -103,7 +102,7 @@ class FileBrowserActivity : AppCompatActivity(), FileBrowserContract.View {
         adapter.files = files
         adapter.notifyDataSetChanged()
         emptyView.visibility = View.GONE
-        recycler_view.visibility = View.VISIBLE
+        fileBrowserRecyclerView.visibility = View.VISIBLE
     }
 
     override fun showError(stringId: Int) {
@@ -122,7 +121,7 @@ class FileBrowserActivity : AppCompatActivity(), FileBrowserContract.View {
 
     override fun showNoFilesView() {
         emptyView.visibility = View.VISIBLE
-        recycler_view.visibility = View.GONE
+        fileBrowserRecyclerView.visibility = View.GONE
     }
 
     override fun notifyFileSelected(file: File) {
