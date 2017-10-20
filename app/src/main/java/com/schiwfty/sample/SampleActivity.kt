@@ -18,7 +18,6 @@ class SampleActivity : AppCompatActivity() {
         button.setOnClickListener {
             FileBrowserActivity.startActivity(this, RC_SELECT_FILE)
         }
-
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

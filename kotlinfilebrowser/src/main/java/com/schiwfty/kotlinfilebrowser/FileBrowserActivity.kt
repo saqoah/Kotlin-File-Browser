@@ -28,8 +28,10 @@ class FileBrowserActivity : AppCompatActivity(), FileBrowserContract.View {
 
     companion object {
         const val ARG_FILE_RESULT = "arg_file_selected_result"
-        fun startActivity(activity: Activity, requestCode: Int) {
+        const val ARG_OPEN_BROWSER_TO_FILE = "arg_open_file_to_browser"
+        fun startActivity(activity: Activity, requestCode: Int, file: File = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).parentFile) {
             val intent = Intent(activity, FileBrowserActivity::class.java)
+            intent.putExtra(ARG_OPEN_BROWSER_TO_FILE, file.absolutePath)
             activity.startActivityForResult(intent, requestCode)
         }
     }
@@ -38,8 +40,9 @@ class FileBrowserActivity : AppCompatActivity(), FileBrowserContract.View {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_file_browser)
         setSupportActionBar(toolbar)
+        val startFile = intent.getStringExtra(ARG_OPEN_BROWSER_TO_FILE)
         presenter = FileBrowserPresenter()
-        presenter.setup(this, this, Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).parentFile)
+        presenter.setup(this, this, File(startFile))
         checkPermission()
 
         fileBrowserRecyclerView.setHasFixedSize(true)
