@@ -1,7 +1,6 @@
 package com.schiwfty.kotlinfilebrowser
 
 import java.io.File
-import com.facebook.common.util.UriUtil
 import android.net.Uri
 
 
@@ -23,13 +22,6 @@ fun Long.formatBytesAsSize(): String {
 
 fun File.getMimeType(): String{
     return android.webkit.MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension) ?: "*/*"
-}
-
-fun Int.getUriOfDrawableRes(): Uri{
-    return Uri.Builder()
-            .scheme(UriUtil.LOCAL_RESOURCE_SCHEME)
-            .path(this.toString())
-            .build()
 }
 
 fun File.search(searchTerm: String): List<File>{

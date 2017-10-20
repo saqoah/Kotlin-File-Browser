@@ -2,16 +2,12 @@ package com.schiwfty.kotlinfilebrowser
 
 import android.content.Context
 import android.net.Uri
+import android.support.v4.content.res.ResourcesCompat
 import android.support.v7.widget.RecyclerView
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
-import com.facebook.common.util.UriUtil
-import com.facebook.drawee.backends.pipeline.Fresco
-import com.facebook.drawee.generic.GenericDraweeHierarchyBuilder
-import com.facebook.drawee.view.SimpleDraweeView
-import com.facebook.imagepipeline.common.ResizeOptions
-import com.facebook.imagepipeline.request.ImageRequestBuilder
+import com.bumptech.glide.Glide
 import kotlinx.android.synthetic.main.list_item_file.view.*
 import java.io.File
 
@@ -20,7 +16,7 @@ import java.io.File
  * Created by arran on 26/06/2017.
  */
 class FileViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
-    val icon: SimpleDraweeView = view.icon
+    val icon: ImageView = view.icon
     val name: TextView = view.name
     val info: TextView = view.extra_info
     fun bind(file: File, context: Context) {
@@ -39,11 +35,11 @@ class FileViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
             val fileFormat = splitMime[1].toLowerCase()
             when (fileType) {
                 "video" -> {
-                    setImage(Uri.fromFile(file))
+                    setImage(Uri.fromFile(file), context)
                     setPlaceholder(R.drawable.ic_videocam_black_24dp, context)
                 }
                 "image" -> {
-                    setImage(Uri.fromFile(file))
+                    setImage(Uri.fromFile(file), context)
                     setPlaceholder(R.drawable.ic_image_black_24dp, context)
                 }
                 "audio" -> (icon as ImageView).setImageResource(R.drawable.ic_audiotrack_black_24dp)
@@ -63,29 +59,12 @@ class FileViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
     }
 
     fun setPlaceholder(resId: Int, context: Context) {
-        val builder = GenericDraweeHierarchyBuilder(context.resources)
-        val hierarchy = builder
-                .setFadeDuration(300)
-                .setPlaceholderImage(resId)
-                .build()
-        icon.hierarchy = hierarchy
+        icon.setImageDrawable(ResourcesCompat.getDrawable(context.resources, resId, null))
     }
 
-    fun setImage(uri: Uri) {
-        val imageRequestBuilder = ImageRequestBuilder.newBuilderWithSource(uri)
-        if (UriUtil.isNetworkUri(uri)) {
-            imageRequestBuilder.isProgressiveRenderingEnabled = true
-        } else {
-            imageRequestBuilder.resizeOptions = ResizeOptions(
-                    icon.layoutParams.width,
-                    icon.layoutParams.height)
-        }
-        val draweeController = Fresco.newDraweeControllerBuilder()
-                .setImageRequest(imageRequestBuilder.build())
-                .setOldController(icon.controller)
-                // .setControllerListener(icon.getListener())
-                .setAutoPlayAnimations(true)
-                .build()
-        icon.controller = draweeController
+    fun setImage(uri: Uri, context: Context) {
+        Glide.with(context)
+                .load(uri)
+                .into(icon)
     }
 }
