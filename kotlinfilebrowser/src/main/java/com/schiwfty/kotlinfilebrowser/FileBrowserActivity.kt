@@ -9,6 +9,8 @@ import android.support.design.widget.Snackbar
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import android.widget.EditText
 import android.widget.HorizontalScrollView
@@ -29,9 +31,11 @@ class FileBrowserActivity : AppCompatActivity(), FileBrowserContract.View {
     companion object {
         const val ARG_FILE_RESULT = "arg_file_selected_result"
         const val ARG_OPEN_BROWSER_TO_FILE = "arg_open_file_to_browser"
-        fun startActivity(activity: Activity, requestCode: Int, file: File = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).parentFile) {
+        const val ARG_IS_SELECT_FOLDERS = "arg_is_able_to_select_folders"
+        fun startActivity(activity: Activity, requestCode: Int, selectFolderMode: Boolean = false, file: File = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).parentFile) {
             val intent = Intent(activity, FileBrowserActivity::class.java)
             intent.putExtra(ARG_OPEN_BROWSER_TO_FILE, file.absolutePath)
+            intent.putExtra(ARG_IS_SELECT_FOLDERS, selectFolderMode)
             activity.startActivityForResult(intent, requestCode)
         }
     }
@@ -40,9 +44,14 @@ class FileBrowserActivity : AppCompatActivity(), FileBrowserContract.View {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_file_browser)
         setSupportActionBar(toolbar)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        toolbar.setNavigationOnClickListener {
+            finish()
+        }
+        val selectFolderMode = intent.getBooleanExtra(ARG_IS_SELECT_FOLDERS, false)
         val startFile = intent.getStringExtra(ARG_OPEN_BROWSER_TO_FILE)
         presenter = FileBrowserPresenter()
-        presenter.setup(this, this, File(startFile))
+        presenter.setup(this, this, File(startFile), selectFolderMode)
         checkPermission()
 
         fileBrowserRecyclerView.setHasFixedSize(true)
@@ -50,12 +59,26 @@ class FileBrowserActivity : AppCompatActivity(), FileBrowserContract.View {
         fileBrowserRecyclerView.layoutManager = mLayoutManager
         fileBrowserRecyclerView.adapter = adapter
 
-        addFileFab.setOnClickListener {
-            showAddFileDialog()
+        if (!selectFolderMode) fabDone.hide()
+        fabDone.setOnClickListener {
+            notifyFileSelected(presenter.getCurrentFile())
         }
 
-        addFolderFab.setOnClickListener {
-            showAddFolderDialog()
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        val inflater = menuInflater
+        inflater.inflate(R.menu.menu_toolbar, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.create_folder -> {
+                showAddFolderDialog()
+                return true
+            }
+            else -> return super.onOptionsItemSelected(item)
         }
     }
 

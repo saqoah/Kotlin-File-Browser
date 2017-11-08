@@ -12,10 +12,16 @@ class FileBrowserPresenter : FileBrowserContract.Presenter {
     override val rootDirectory: File
         get() = Environment.getExternalStorageDirectory()
 
-    lateinit var currentFile: File
+    private lateinit var currentFile: File
+
+    private var folderSelectMode: Boolean = false
 
     lateinit var context: Context
     lateinit var view: FileBrowserContract.View
+
+    override fun getCurrentFile(): File {
+        return currentFile
+    }
 
     override fun deleteFile(file: File) {
         try {
@@ -23,7 +29,7 @@ class FileBrowserPresenter : FileBrowserContract.Presenter {
             if (!deleted) {
                 if (file.isDirectory) view.showError(R.string.error_creating_folder)
                 else view.showError(R.string.error_deleting_file)
-            }else{
+            } else {
                 reload()
             }
         } catch (e: Exception) {
@@ -50,7 +56,7 @@ class FileBrowserPresenter : FileBrowserContract.Presenter {
                 currentFile = file
                 if (file.isDirectory) {
                     reload()
-                } else view.notifyFileSelected(file)
+                } else if (!folderSelectMode) view.notifyFileSelected(file)
             }
             FileBrowserAdapter.FILE_ACTION.DELETE -> {
                 view.showDeleteFileDialog(file)
@@ -100,8 +106,9 @@ class FileBrowserPresenter : FileBrowserContract.Presenter {
         }
     }
 
-    override fun setup(context: Context, view: FileBrowserContract.View, file: File) {
-        currentFile = file
+    override fun setup(context: Context, view: FileBrowserContract.View, file: File, isFolderSelectMode: Boolean) {
+        this.folderSelectMode = isFolderSelectMode
+        this.currentFile = file
         this.context = context
         this.view = view
     }

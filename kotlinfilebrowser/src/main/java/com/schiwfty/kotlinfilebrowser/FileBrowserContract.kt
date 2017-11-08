@@ -24,7 +24,7 @@ interface FileBrowserContract {
 
     interface Presenter{
         val rootDirectory: File
-        fun setup(context: Context, view: FileBrowserContract.View, file: File)
+        fun setup(context: Context, view: FileBrowserContract.View, file: File, isFolderSelectMode: Boolean)
         fun reload()
         fun goUpADirectory()
         fun isAtRoot(): Boolean
@@ -34,5 +34,6 @@ interface FileBrowserContract {
         fun performFileAction(file: File, action: FileBrowserAdapter.FILE_ACTION)
         fun renameFile(file: File, name: String)
         fun deleteFile(file: File)
+        fun getCurrentFile(): File
     }
 }

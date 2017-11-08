@@ -13,10 +13,15 @@ class SampleActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        val button = findViewById(R.id.startBrowser)
+        val normalModeButton = findViewById(R.id.startBrowser)
+        val folderSelectModeButton = findViewById(R.id.startBrowserFolderMode)
 
-        button.setOnClickListener {
+        normalModeButton.setOnClickListener {
             FileBrowserActivity.startActivity(this, RC_SELECT_FILE)
+        }
+
+        folderSelectModeButton.setOnClickListener {
+            FileBrowserActivity.startActivity(this, RC_SELECT_FILE, true)
         }
     }
 
