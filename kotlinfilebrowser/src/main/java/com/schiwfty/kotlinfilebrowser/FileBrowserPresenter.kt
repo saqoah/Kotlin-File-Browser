@@ -2,17 +2,18 @@ package com.schiwfty.kotlinfilebrowser
 
 import android.content.Context
 import android.os.Environment
+import android.support.v4.content.ContextCompat
 import java.io.File
+
 
 /**
  * Created by arran on 24/06/2017.
  */
 class FileBrowserPresenter : FileBrowserContract.Presenter {
 
-    override val rootDirectory: File
-        get() = Environment.getExternalStorageDirectory()
-
     private lateinit var currentFile: File
+
+    private lateinit var rootDirectory: File
 
     private var folderSelectMode: Boolean = false
 
@@ -21,6 +22,10 @@ class FileBrowserPresenter : FileBrowserContract.Presenter {
 
     override fun getCurrentFile(): File {
         return currentFile
+    }
+
+    override fun setCurrentFile(file: File) {
+        this.currentFile = file
     }
 
     override fun deleteFile(file: File) {
@@ -106,15 +111,16 @@ class FileBrowserPresenter : FileBrowserContract.Presenter {
         }
     }
 
-    override fun setup(context: Context, view: FileBrowserContract.View, file: File, isFolderSelectMode: Boolean) {
+    override fun setup(context: Context, view: FileBrowserContract.View, rootDirectory: File, file: File, isFolderSelectMode: Boolean) {
         this.folderSelectMode = isFolderSelectMode
         this.currentFile = file
+        this.rootDirectory = rootDirectory
         this.context = context
         this.view = view
     }
 
     override fun isAtRoot(): Boolean {
-        return currentFile == Environment.getExternalStorageDirectory()
+        return currentFile == rootDirectory
     }
 
     override fun reload() {
@@ -129,7 +135,7 @@ class FileBrowserPresenter : FileBrowserContract.Presenter {
         }
         if (isAtRoot()) view.setToolbarTitle(R.string.root)
         else view.setToolbarTitle(currentFile.name)
-        view.setupBreadcrumbTrail(currentFile)
+        view.setupBreadcrumbTrail(rootDirectory, currentFile)
     }
 
 
@@ -144,5 +150,13 @@ class FileBrowserPresenter : FileBrowserContract.Presenter {
     override fun notifyBreadcrumbSelected(file: File) {
         currentFile = file
         reload()
+    }
+
+    override fun getExternalFolders(): List<File> {
+        return ContextCompat.getExternalFilesDirs(context, null).toList()
+    }
+
+    override fun setNewRootDirectory(file: File) {
+        this.rootDirectory = file
     }
 }

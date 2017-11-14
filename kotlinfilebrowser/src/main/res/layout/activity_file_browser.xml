@@ -67,6 +67,12 @@
 
     </LinearLayout>
 
+    <LinearLayout
+        android:id="@+id/drivesLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="?actionBarSize"
+        android:orientation="vertical"/>
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fabDone"

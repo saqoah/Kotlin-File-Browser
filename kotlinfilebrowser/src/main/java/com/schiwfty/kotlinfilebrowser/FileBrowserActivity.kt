@@ -23,6 +23,7 @@ import java.io.File
 class FileBrowserActivity : AppCompatActivity(), FileBrowserContract.View {
 
     lateinit var presenter: FileBrowserContract.Presenter
+    private var selectFolderMode = false
 
     val adapter: FileBrowserAdapter = FileBrowserAdapter({ file, action ->
         presenter.performFileAction(file, action)
@@ -48,10 +49,10 @@ class FileBrowserActivity : AppCompatActivity(), FileBrowserContract.View {
         toolbar.setNavigationOnClickListener {
             finish()
         }
-        val selectFolderMode = intent.getBooleanExtra(ARG_IS_SELECT_FOLDERS, false)
-        val startFile = intent.getStringExtra(ARG_OPEN_BROWSER_TO_FILE)
+        selectFolderMode = intent.getBooleanExtra(ARG_IS_SELECT_FOLDERS, false)
+        val startFilePath = intent.getStringExtra(ARG_OPEN_BROWSER_TO_FILE)
         presenter = FileBrowserPresenter()
-        presenter.setup(this, this, File(startFile), selectFolderMode)
+        presenter.setup(this, this, File(startFilePath), Environment.getExternalStorageDirectory(), selectFolderMode)
         checkPermission()
 
         fileBrowserRecyclerView.setHasFixedSize(true)
@@ -82,10 +83,10 @@ class FileBrowserActivity : AppCompatActivity(), FileBrowserContract.View {
         }
     }
 
-    override fun setupBreadcrumbTrail(file: File) {
+    override fun setupBreadcrumbTrail(rootFile: File, file: File) {
         breadcrumb_root_layout.removeAllViews()
         val rootBreadcrumb = BreadcrumbView(this)
-        rootBreadcrumb.bind(Environment.getExternalStorageDirectory())
+        rootBreadcrumb.bind(rootFile)
         rootBreadcrumb.textVeiw.text = getString(R.string.root)
         rootBreadcrumb.setOnClickListener {
             presenter.notifyBreadcrumbSelected(rootBreadcrumb.file)
@@ -94,7 +95,7 @@ class FileBrowserActivity : AppCompatActivity(), FileBrowserContract.View {
 
         val fileList = mutableListOf<File>()
         var parentFile: File = file
-        while (parentFile != Environment.getExternalStorageDirectory()) {
+        while (parentFile != rootFile) {
             if (parentFile.name.isNotEmpty()) fileList.add(parentFile)
             parentFile = parentFile.parentFile
         }
@@ -128,7 +129,33 @@ class FileBrowserActivity : AppCompatActivity(), FileBrowserContract.View {
         adapter.files = files
         adapter.notifyDataSetChanged()
         emptyView.visibility = View.GONE
+        drivesLayout.visibility = View.GONE
+        breadcrumbScroll.visibility = View.VISIBLE
         fileBrowserRecyclerView.visibility = View.VISIBLE
+    }
+
+    override fun showExternalFolders() {
+        drivesLayout.visibility = View.VISIBLE
+        emptyView.visibility = View.GONE
+        breadcrumbScroll.visibility = View.GONE
+        fileBrowserRecyclerView.visibility = View.GONE
+        drivesLayout.removeAllViews()
+        val sectionToIgnore = "Android/data/${applicationContext.packageName}/files"
+        val files = presenter.getExternalFolders()
+        files.forEach { file ->
+            if (file.endsWith(sectionToIgnore)) {
+                val cleanedFile = File(file.absolutePath.removeSuffix(sectionToIgnore))
+                val view = ExternalStorageView(this)
+                drivesLayout.addView(view)
+                view.init(cleanedFile)
+                view.setOnClickListener {
+                    presenter.setNewRootDirectory(cleanedFile)
+                    presenter.setCurrentFile(cleanedFile)
+                    presenter.reload()
+                }
+            }
+
+        }
     }
 
     override fun showError(stringId: Int) {
@@ -146,6 +173,7 @@ class FileBrowserActivity : AppCompatActivity(), FileBrowserContract.View {
     }
 
     override fun showNoFilesView() {
+        breadcrumbScroll.visibility = View.VISIBLE
         emptyView.visibility = View.VISIBLE
         fileBrowserRecyclerView.visibility = View.GONE
     }
@@ -158,7 +186,7 @@ class FileBrowserActivity : AppCompatActivity(), FileBrowserContract.View {
     }
 
     override fun onBackPressed() {
-        if (presenter.isAtRoot()) super.onBackPressed()
+        if (presenter.isAtRoot()) showExternalFolders()
         else presenter.goUpADirectory()
     }
 

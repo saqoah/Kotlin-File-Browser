@@ -1,20 +1,20 @@
 package com.schiwfty.kotlinfilebrowser
 
 import android.content.Context
-import android.os.Environment
 import java.io.File
 
 /**
  * Created by arran on 24/06/2017.
  */
 interface FileBrowserContract {
-    interface View{
+    interface View {
         fun showFileList(files: List<File>)
         fun showError(stringId: Int)
         fun setToolbarTitle(title: String)
         fun showNoFilesView()
+        fun showExternalFolders()
         fun notifyFileSelected(file: File)
-        fun setupBreadcrumbTrail(file: File)
+        fun setupBreadcrumbTrail(rootFile: File, file: File)
         fun setToolbarTitle(stringRes: Int)
         fun showAddFileDialog()
         fun showAddFolderDialog()
@@ -22,18 +22,20 @@ interface FileBrowserContract {
         fun showDeleteFileDialog(file: File)
     }
 
-    interface Presenter{
-        val rootDirectory: File
-        fun setup(context: Context, view: FileBrowserContract.View, file: File, isFolderSelectMode: Boolean)
+    interface Presenter {
+        fun setup(context: Context, view: FileBrowserContract.View, rootDirectory: File, file: File, isFolderSelectMode: Boolean)
         fun reload()
         fun goUpADirectory()
         fun isAtRoot(): Boolean
-        fun notifyBreadcrumbSelected(file:File)
+        fun notifyBreadcrumbSelected(file: File)
         fun createFileAtCurrentDirectory(name: String)
         fun createFolderAtCurrentDirectory(name: String)
         fun performFileAction(file: File, action: FileBrowserAdapter.FILE_ACTION)
         fun renameFile(file: File, name: String)
         fun deleteFile(file: File)
         fun getCurrentFile(): File
+        fun setCurrentFile(file: File)
+        fun setNewRootDirectory(file: File)
+        fun getExternalFolders(): List<File>
     }
 }
