@@ -1,6 +1,7 @@
 package com.schiwfty.kotlinfilebrowser
 
 import android.content.Context
+import android.support.v4.content.res.ResourcesCompat
 import android.util.AttributeSet
 import android.view.View
 import android.widget.LinearLayout
@@ -19,7 +20,10 @@ class ExternalStorageView : LinearLayout {
         View.inflate(context, R.layout.view_external_storage, this)
     }
 
-    fun init(file: File){
+    fun init(file: File) {
         driveName.text = file.absolutePath
+        freeSpace.text = file.freeSpace.formatBytesAsSize()
+        if (file.absolutePath == "/storage/emulated/0") icon.setImageDrawable(ResourcesCompat.getDrawable(resources, R.drawable.ic_internal_storage, null))
+        else icon.setImageDrawable(ResourcesCompat.getDrawable(resources, R.drawable.ic_sd_storage, null))
     }
 }
