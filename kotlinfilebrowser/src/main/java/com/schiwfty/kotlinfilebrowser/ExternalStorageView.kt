@@ -1,6 +1,7 @@
 package com.schiwfty.kotlinfilebrowser
 
 import android.content.Context
+import android.os.Environment
 import android.support.v4.content.res.ResourcesCompat
 import android.util.AttributeSet
 import android.view.View
@@ -21,8 +22,10 @@ class ExternalStorageView : LinearLayout {
     }
 
     fun init(file: File) {
-        driveName.text = file.absolutePath
+        driveName.text = file.getCleanedName(context)
         freeSpace.text = file.freeSpace.formatBytesAsSize()
+        if (file.absolutePath == Environment.getExternalStorageDirectory().absolutePath) driveInfo.text = "Default Storage"
+        else driveInfo.text = "External Storage (Private folder will be create under using the app package name)"
         if (file.absolutePath.startsWith("/storage/emulated")) icon.setImageDrawable(ResourcesCompat.getDrawable(resources, R.drawable.ic_internal_storage, null))
         else icon.setImageDrawable(ResourcesCompat.getDrawable(resources, R.drawable.ic_sd_storage, null))
     }

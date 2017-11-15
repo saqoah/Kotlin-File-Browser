@@ -1,7 +1,7 @@
 package com.schiwfty.kotlinfilebrowser
 
+import android.content.Context
 import java.io.File
-import android.net.Uri
 
 
 /**
@@ -20,14 +20,20 @@ fun Long.formatBytesAsSize(): String {
     }
 }
 
-fun File.getMimeType(): String{
+fun File.getMimeType(): String {
     return android.webkit.MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension) ?: "*/*"
 }
 
-fun File.search(searchTerm: String): List<File>{
+fun File.search(searchTerm: String): List<File> {
     val results = mutableListOf<File>()
     walkTopDown().asIterable().forEach {
-        if(it.name.contains(searchTerm)) results.add(it)
+        if (it.name.contains(searchTerm)) results.add(it)
     }
     return results
+}
+
+fun File.getCleanedName(context: Context): String {
+    val partToIgnore = "Android/data/${context.packageName}/files"
+    if (this.absolutePath.endsWith(partToIgnore)) return absolutePath.removeSuffix(partToIgnore)
+    else return this.absolutePath
 }

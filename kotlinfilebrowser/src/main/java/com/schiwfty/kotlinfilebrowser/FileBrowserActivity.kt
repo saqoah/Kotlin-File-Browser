@@ -148,21 +148,20 @@ class FileBrowserActivity : AppCompatActivity(), FileBrowserContract.View {
         breadcrumbScroll.visibility = View.GONE
         fileBrowserRecyclerView.visibility = View.GONE
         drivesLayout.removeAllViews()
-        val sectionToIgnore = "Android/data/${applicationContext.packageName}/files"
-        val files = presenter.getExternalFolders()
-        files.forEach { file ->
-            if (file.endsWith(sectionToIgnore)) {
-                val cleanedFile = File(file.absolutePath.removeSuffix(sectionToIgnore))
-                val view = ExternalStorageView(this)
-                drivesLayout.addView(view)
-                view.init(cleanedFile)
-                view.setOnClickListener {
-                    presenter.setNewRootDirectory(cleanedFile)
-                    presenter.setCurrentFile(cleanedFile)
-                    presenter.reload()
-                }
-            }
 
+        val sectionToIgnore = "Android/data/${applicationContext.packageName}/files"
+        val unformattedFiles = presenter.getExternalFolders()
+        unformattedFiles.forEach {
+            val file = if (it.absolutePath.contains(Environment.getExternalStorageDirectory().absolutePath)) File(it.absolutePath.removeSuffix(sectionToIgnore))
+            else it
+            val view = ExternalStorageView(this)
+            drivesLayout.addView(view)
+            view.init(file)
+            view.setOnClickListener {
+                presenter.setNewRootDirectory(file)
+                presenter.setCurrentFile(file)
+                presenter.reload()
+            }
         }
     }
 
@@ -183,6 +182,7 @@ class FileBrowserActivity : AppCompatActivity(), FileBrowserContract.View {
     override fun showNoFilesView() {
         breadcrumbScroll.visibility = View.VISIBLE
         emptyView.visibility = View.VISIBLE
+        drivesLayout.visibility = View.GONE
         fileBrowserRecyclerView.visibility = View.GONE
     }
 

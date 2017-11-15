@@ -98,8 +98,9 @@ class FileBrowserPresenter : FileBrowserContract.Presenter {
             if (currentFile.canWrite()) {
                 try {
                     val newFolder = File(currentFile.absolutePath, name)
-                    newFolder.mkdirs()
-                    reload()
+                    val success = newFolder.mkdirs()
+                    if (success) reload()
+                    else view.showError(R.string.error_creating_folder)
                 } catch (e: Exception) {
                     view.showError(R.string.error_creating_folder)
                     e.printStackTrace()
