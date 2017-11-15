@@ -101,8 +101,8 @@ class FileBrowserActivity : AppCompatActivity(), FileBrowserContract.View {
         breadcrumb_root_layout.addView(rootBreadcrumb)
 
         val fileList = mutableListOf<File>()
-        var parentFile: File = file
-        while (parentFile != rootFile) {
+        var parentFile: File? = file
+        while (parentFile != rootFile && parentFile != null) {
             if (parentFile.name.isNotEmpty()) fileList.add(parentFile)
             parentFile = parentFile.parentFile
         }
