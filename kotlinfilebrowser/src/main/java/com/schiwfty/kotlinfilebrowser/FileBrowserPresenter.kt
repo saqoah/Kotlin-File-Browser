@@ -1,7 +1,6 @@
 package com.schiwfty.kotlinfilebrowser
 
 import android.content.Context
-import android.os.Environment
 import android.support.v4.content.ContextCompat
 import java.io.File
 
@@ -111,10 +110,8 @@ class FileBrowserPresenter : FileBrowserContract.Presenter {
         }
     }
 
-    override fun setup(context: Context, view: FileBrowserContract.View, rootDirectory: File, file: File, isFolderSelectMode: Boolean) {
+    override fun setup(context: Context, view: FileBrowserContract.View, isFolderSelectMode: Boolean) {
         this.folderSelectMode = isFolderSelectMode
-        this.currentFile = file
-        this.rootDirectory = rootDirectory
         this.context = context
         this.view = view
     }
@@ -133,7 +130,7 @@ class FileBrowserPresenter : FileBrowserContract.Presenter {
             view.showError(R.string.error_accessing_file)
             view.showNoFilesView()
         }
-        if (isAtRoot()) view.setToolbarTitle(R.string.root)
+        if (isAtRoot()) view.setToolbarTitle(rootDirectory.absolutePath)
         else view.setToolbarTitle(currentFile.name)
         view.setupBreadcrumbTrail(rootDirectory, currentFile)
     }

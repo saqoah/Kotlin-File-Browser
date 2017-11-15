@@ -23,7 +23,7 @@ class ExternalStorageView : LinearLayout {
     fun init(file: File) {
         driveName.text = file.absolutePath
         freeSpace.text = file.freeSpace.formatBytesAsSize()
-        if (file.absolutePath == "/storage/emulated/0") icon.setImageDrawable(ResourcesCompat.getDrawable(resources, R.drawable.ic_internal_storage, null))
+        if (file.absolutePath.startsWith("/storage/emulated")) icon.setImageDrawable(ResourcesCompat.getDrawable(resources, R.drawable.ic_internal_storage, null))
         else icon.setImageDrawable(ResourcesCompat.getDrawable(resources, R.drawable.ic_sd_storage, null))
     }
 }

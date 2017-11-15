@@ -33,9 +33,9 @@ class FileBrowserActivity : AppCompatActivity(), FileBrowserContract.View {
         const val ARG_FILE_RESULT = "arg_file_selected_result"
         const val ARG_OPEN_BROWSER_TO_FILE = "arg_open_file_to_browser"
         const val ARG_IS_SELECT_FOLDERS = "arg_is_able_to_select_folders"
-        fun startActivity(activity: Activity, requestCode: Int, selectFolderMode: Boolean = false, file: File = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).parentFile) {
+        fun startActivity(activity: Activity, requestCode: Int, selectFolderMode: Boolean = false, file: File? = null) {
             val intent = Intent(activity, FileBrowserActivity::class.java)
-            intent.putExtra(ARG_OPEN_BROWSER_TO_FILE, file.absolutePath)
+            intent.putExtra(ARG_OPEN_BROWSER_TO_FILE, file?.absolutePath ?: null)
             intent.putExtra(ARG_IS_SELECT_FOLDERS, selectFolderMode)
             activity.startActivityForResult(intent, requestCode)
         }
@@ -52,7 +52,14 @@ class FileBrowserActivity : AppCompatActivity(), FileBrowserContract.View {
         selectFolderMode = intent.getBooleanExtra(ARG_IS_SELECT_FOLDERS, false)
         val startFilePath = intent.getStringExtra(ARG_OPEN_BROWSER_TO_FILE)
         presenter = FileBrowserPresenter()
-        presenter.setup(this, this, File(startFilePath), Environment.getExternalStorageDirectory(), selectFolderMode)
+        presenter.setup(this, this, selectFolderMode)
+        if (startFilePath == null) {
+            showExternalFolders()
+        } else {
+            presenter.setCurrentFile(File(startFilePath))
+            presenter.setNewRootDirectory(Environment.getExternalStorageDirectory())
+            presenter.reload()
+        }
         checkPermission()
 
         fileBrowserRecyclerView.setHasFixedSize(true)
@@ -87,7 +94,7 @@ class FileBrowserActivity : AppCompatActivity(), FileBrowserContract.View {
         breadcrumb_root_layout.removeAllViews()
         val rootBreadcrumb = BreadcrumbView(this)
         rootBreadcrumb.bind(rootFile)
-        rootBreadcrumb.textVeiw.text = getString(R.string.root)
+        rootBreadcrumb.textVeiw.text = rootFile.absolutePath
         rootBreadcrumb.setOnClickListener {
             presenter.notifyBreadcrumbSelected(rootBreadcrumb.file)
         }
@@ -135,6 +142,7 @@ class FileBrowserActivity : AppCompatActivity(), FileBrowserContract.View {
     }
 
     override fun showExternalFolders() {
+        setToolbarTitle(R.string.storage)
         drivesLayout.visibility = View.VISIBLE
         emptyView.visibility = View.GONE
         breadcrumbScroll.visibility = View.GONE
@@ -186,7 +194,8 @@ class FileBrowserActivity : AppCompatActivity(), FileBrowserContract.View {
     }
 
     override fun onBackPressed() {
-        if (presenter.isAtRoot()) showExternalFolders()
+        if (fileBrowserRecyclerView.visibility == View.GONE && drivesLayout.visibility == View.VISIBLE) super.onBackPressed()
+        else if (presenter.isAtRoot()) showExternalFolders()
         else presenter.goUpADirectory()
     }
 

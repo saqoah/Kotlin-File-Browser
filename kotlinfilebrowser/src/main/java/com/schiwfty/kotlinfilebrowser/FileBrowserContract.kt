@@ -23,7 +23,7 @@ interface FileBrowserContract {
     }
 
     interface Presenter {
-        fun setup(context: Context, view: FileBrowserContract.View, rootDirectory: File, file: File, isFolderSelectMode: Boolean)
+        fun setup(context: Context, view: FileBrowserContract.View, isFolderSelectMode: Boolean)
         fun reload()
         fun goUpADirectory()
         fun isAtRoot(): Boolean
