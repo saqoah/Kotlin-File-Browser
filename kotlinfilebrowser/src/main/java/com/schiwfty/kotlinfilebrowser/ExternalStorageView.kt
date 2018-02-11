@@ -25,7 +25,7 @@ class ExternalStorageView : LinearLayout {
         driveName.text = file.getCleanedName(context)
         freeSpace.text = file.freeSpace.formatBytesAsSize()
         if (file.absolutePath == Environment.getExternalStorageDirectory().absolutePath) driveInfo.text = "Default Storage"
-        else driveInfo.text = "External Storage (Private folder will be create under using the app package name)"
+        else driveInfo.text = context.getString(R.string.external_storage_hint)
         if (file.absolutePath.startsWith("/storage/emulated")) icon.setImageDrawable(ResourcesCompat.getDrawable(resources, R.drawable.ic_internal_storage, null))
         else icon.setImageDrawable(ResourcesCompat.getDrawable(resources, R.drawable.ic_sd_storage, null))
     }

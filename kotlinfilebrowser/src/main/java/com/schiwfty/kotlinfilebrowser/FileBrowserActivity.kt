@@ -152,7 +152,9 @@ class FileBrowserActivity : AppCompatActivity(), FileBrowserContract.View {
         val sectionToIgnore = "Android/data/${applicationContext.packageName}/files"
         val unformattedFiles = presenter.getExternalFolders()
         unformattedFiles.forEach {
-            val file = if (it.absolutePath.contains(Environment.getExternalStorageDirectory().absolutePath)) File(it.absolutePath.removeSuffix(sectionToIgnore))
+            val downloads = Environment.getExternalStorageDirectory()?.absolutePath
+            val removedSuffix = it.absolutePath?.removeSuffix(sectionToIgnore)
+            val file = if (downloads != null && removedSuffix != null && it.absolutePath?.contains(downloads) == true) File(removedSuffix)
             else it
             val view = ExternalStorageView(this)
             drivesLayout.addView(view)
