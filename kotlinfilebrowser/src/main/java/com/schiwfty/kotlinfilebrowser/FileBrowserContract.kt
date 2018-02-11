@@ -33,7 +33,7 @@ interface FileBrowserContract {
         fun performFileAction(file: File, action: FileBrowserAdapter.FILE_ACTION)
         fun renameFile(file: File, name: String)
         fun deleteFile(file: File)
-        fun getCurrentFile(): File
+        fun getCurrentFile(): File?
         fun setCurrentFile(file: File)
         fun setNewRootDirectory(file: File)
         fun getExternalFolders(): List<File>

@@ -69,9 +69,12 @@ class FileBrowserActivity : AppCompatActivity(), FileBrowserContract.View {
 
         if (!selectFolderMode) fabDone.hide()
         fabDone.setOnClickListener {
-            notifyFileSelected(presenter.getCurrentFile())
+            presenter.getCurrentFile()?.let {
+                notifyFileSelected(it)
+            } ?: let {
+                showError(R.string.error_cannot_select_folder)
+            }
         }
-
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {

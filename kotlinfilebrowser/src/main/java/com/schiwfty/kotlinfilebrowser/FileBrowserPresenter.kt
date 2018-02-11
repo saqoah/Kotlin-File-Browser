@@ -10,7 +10,7 @@ import java.io.File
  */
 class FileBrowserPresenter : FileBrowserContract.Presenter {
 
-    private lateinit var currentFile: File
+    private var currentFile: File? = null
 
     private lateinit var rootDirectory: File
 
@@ -19,7 +19,7 @@ class FileBrowserPresenter : FileBrowserContract.Presenter {
     lateinit var context: Context
     lateinit var view: FileBrowserContract.View
 
-    override fun getCurrentFile(): File {
+    override fun getCurrentFile(): File? {
         return currentFile
     }
 
@@ -72,41 +72,45 @@ class FileBrowserPresenter : FileBrowserContract.Presenter {
     }
 
     override fun createFileAtCurrentDirectory(name: String) {
-        val newFile = File(currentFile.absolutePath, name)
-        if (!newFile.exists()) {
-            if (currentFile.canWrite()) {
-                try {
-                    newFile.createNewFile()
-                    reload()
-                } catch (e: Exception) {
-                    view.showError(R.string.error_creating_file)
-                    e.printStackTrace()
+        currentFile?.let {
+            val newFile = File(it.absolutePath, name)
+            if (!newFile.exists()) {
+                if (it.canWrite()) {
+                    try {
+                        newFile.createNewFile()
+                        reload()
+                    } catch (e: Exception) {
+                        view.showError(R.string.error_creating_file)
+                        e.printStackTrace()
+                    }
+                } else {
+                    view.showError(R.string.cannot_create_File)
                 }
             } else {
-                view.showError(R.string.cannot_create_File)
+                view.showError(R.string.file_already_exists)
             }
-        } else {
-            view.showError(R.string.file_already_exists)
         }
     }
 
     override fun createFolderAtCurrentDirectory(name: String) {
-        val testFolder = File(currentFile.absolutePath, name)
-        if (testFolder.exists() && testFolder.isDirectory) {
-            view.showError(R.string.folder_already_exists)
-        } else {
-            if (currentFile.canWrite()) {
-                try {
-                    val newFolder = File(currentFile.absolutePath, name)
-                    val success = newFolder.mkdirs()
-                    if (success) reload()
-                    else view.showError(R.string.error_creating_folder)
-                } catch (e: Exception) {
-                    view.showError(R.string.error_creating_folder)
-                    e.printStackTrace()
-                }
+        currentFile?.let {
+            val testFolder = File(it.absolutePath, name)
+            if (testFolder.exists() && testFolder.isDirectory) {
+                view.showError(R.string.folder_already_exists)
             } else {
-                view.showError(R.string.cannot_create_folder)
+                if (it.canWrite()) {
+                    try {
+                        val newFolder = File(it.absolutePath, name)
+                        val success = newFolder.mkdirs()
+                        if (success) reload()
+                        else view.showError(R.string.error_creating_folder)
+                    } catch (e: Exception) {
+                        view.showError(R.string.error_creating_folder)
+                        e.printStackTrace()
+                    }
+                } else {
+                    view.showError(R.string.cannot_create_folder)
+                }
             }
         }
     }
@@ -122,26 +126,29 @@ class FileBrowserPresenter : FileBrowserContract.Presenter {
     }
 
     override fun reload() {
-        if (currentFile.listFiles() != null) {
-            if (currentFile.listFiles().isEmpty()) view.showNoFilesView()
-            else {
-                view.showFileList(currentFile.listFiles().toList())
+        currentFile?.let {
+            if (it.listFiles() != null) {
+                if (it.listFiles().isEmpty()) view.showNoFilesView()
+                else {
+                    view.showFileList(it.listFiles().toList())
+                }
+            } else {
+                view.showError(R.string.error_accessing_file)
+                view.showNoFilesView()
             }
-        } else {
-            view.showError(R.string.error_accessing_file)
-            view.showNoFilesView()
+            if (isAtRoot()) view.setToolbarTitle(rootDirectory.absolutePath)
+            else view.setToolbarTitle(it.name)
+            view.setupBreadcrumbTrail(rootDirectory, it)
         }
-        if (isAtRoot()) view.setToolbarTitle(rootDirectory.absolutePath)
-        else view.setToolbarTitle(currentFile.name)
-        view.setupBreadcrumbTrail(rootDirectory, currentFile)
     }
 
-
     override fun goUpADirectory() {
-        val newFile = currentFile.parentFile
-        if (newFile != null) {
-            currentFile = newFile
-            reload()
+        currentFile?.let {
+            val newFile = it.parentFile
+            if (newFile != null) {
+                currentFile = newFile
+                reload()
+            }
         }
     }
 
