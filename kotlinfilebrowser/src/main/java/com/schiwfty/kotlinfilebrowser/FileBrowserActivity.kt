@@ -15,7 +15,7 @@ import android.view.View
 import android.widget.EditText
 import android.widget.HorizontalScrollView
 import com.afollestad.materialdialogs.MaterialDialog
-import com.tbruyelle.rxpermissions.RxPermissions
+import com.tbruyelle.rxpermissions2.RxPermissions
 import kotlinx.android.synthetic.main.activity_file_browser.*
 import java.io.File
 
