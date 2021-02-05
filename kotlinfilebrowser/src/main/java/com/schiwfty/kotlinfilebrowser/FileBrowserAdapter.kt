@@ -1,61 +1,46 @@
 package com.schiwfty.kotlinfilebrowser
 
-import android.support.v7.widget.PopupMenu
-import android.support.v7.widget.RecyclerView
+//package com.hamza.myapplication
+
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
+import androidx.recyclerview.widget.RecyclerView
 import java.io.File
 
 
 /**
  * Created by arran on 24/06/2017.
  */
-class FileBrowserAdapter(val itemClickListener: (File, FILE_ACTION) -> Unit) : RecyclerView.Adapter<FileViewHolder>() {
-    var files: List<File> = emptyList()
+
+class FileBrowserAdapter(private val itemClickListener: (File, FILE_ACTION) -> Unit) :
+    RecyclerView.Adapter<FileViewHolder>() {
+    private var files: List<File> = emptyList()
 
     enum class FILE_ACTION {
         CLICK,
-        RENAME,
-        DELETE
-    }
-
-    override fun onBindViewHolder(holderFile: FileViewHolder?, position: Int) {
-        holderFile?.bind(files[position], holderFile.view.context)
     }
 
     override fun getItemCount(): Int {
         return files.size
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): FileViewHolder {
-        if (parent == null) throw NullPointerException("parent should not be null")
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.list_item_file, parent, false)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FileViewHolder {
+        val view =
+            LayoutInflater.from(parent.context).inflate(R.layout.list_item_file, parent, false)
         val holder = FileViewHolder(view)
         holder.onClick { _, position, _ ->
             itemClickListener.invoke(files[position], FILE_ACTION.CLICK)
         }
-        holder.onLongClick { view, position, type ->
-            val popupMenu = PopupMenu(view.context, view)
-            popupMenu.inflate(R.menu.menu_file_long_click)
-            popupMenu.setOnMenuItemClickListener {
-                when (it.itemId) {
-                    R.id.delete -> {
-                        itemClickListener.invoke(files[position], FILE_ACTION.DELETE)
-                        true
-                    }
-                    R.id.rename -> {
-                        itemClickListener.invoke(files[position], FILE_ACTION.RENAME)
-                        true
-                    }
-                    else -> false
-                }
 
-            }
-            popupMenu.show()
-        }
         return holder
 
+    }
+
+    override fun onBindViewHolder(holder: FileViewHolder, position: Int) {
+        holder.bind(files[position], holder.view.context)
     }
 }
 
@@ -66,10 +51,18 @@ fun <T : RecyclerView.ViewHolder> T.onClick(event: (view: View, position: Int, t
     return this
 }
 
-fun <T : RecyclerView.ViewHolder> T.onLongClick(event: (view: View, position: Int, type: Int) -> Unit): T {
-    itemView.setOnLongClickListener {
-        event.invoke(it, adapterPosition, itemViewType)
-        true
+class FileViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
+    val name: TextView = view.findViewById(R.id.filename)
+    val info: TextView = view.findViewById(R.id.fileinfo)
+    fun bind(file: File, context: Context) {
+        name.text = file.name
+        if (file.isDirectory) {
+            if (file.listFiles() != null) when (file.listFiles().size) {
+                1 -> info.text = context.getText(R.string.single_item)
+                else -> info.text =
+                    context.getString(R.string.items, file.listFiles().size ?: 0)
+            }
+        }
     }
-    return this
+
 }
